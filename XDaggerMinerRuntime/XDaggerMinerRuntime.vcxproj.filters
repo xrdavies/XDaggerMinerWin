@@ -1,0 +1,256 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Hash">
+      <UniqueIdentifier>{38be7026-dd32-46dd-92b1-a2b951cc0765}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Utils">
+      <UniqueIdentifier>{3d2025d6-d322-4b2a-921d-c67bc0142451}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core">
+      <UniqueIdentifier>{113ed430-ea72-4455-96fd-3b06adc5d891}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core\Workers">
+      <UniqueIdentifier>{3c9976ff-b0da-4a89-83d0-6d07e3c36eac}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core\CL">
+      <UniqueIdentifier>{52485d28-7a6f-4946-9cef-1d198c6a4bd0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="XDagCore">
+      <UniqueIdentifier>{19c72b50-ca9b-45f8-96b4-f862b18e35d4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="XDagCore\win">
+      <UniqueIdentifier>{fd7e5898-6338-421d-ab49-697878b34797}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="XDagCore\dar">
+      <UniqueIdentifier>{451872d0-eeb0-4bf6-b8e3-54e19a9ac077}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="XDagCore\dfstools">
+      <UniqueIdentifier>{44092daa-72c2-43f9-9490-b0e7ad9b3d68}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="XDagCore\win\sys">
+      <UniqueIdentifier>{abb86ae6-1e1e-40c0-85ae-0bbbef7111d3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="XDagCore\win\netinet">
+      <UniqueIdentifier>{dbd59a99-5c6a-489f-a1bf-8708106e7ab9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="CoreV2">
+      <UniqueIdentifier>{fccc3f06-df90-4575-806a-d0ef652ecca9}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Hash\sha256.cpp">
+      <Filter>Hash</Filter>
+    </ClCompile>
+    <ClCompile Include="Hash\sha256_mod.cpp">
+      <Filter>Hash</Filter>
+    </ClCompile>
+    <ClCompile Include="Utils\CpuInfo.cpp">
+      <Filter>Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="Utils\PathUtils.cpp">
+      <Filter>Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="Utils\Random.cpp">
+      <Filter>Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="Utils\Utils.cpp">
+      <Filter>Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="Core\CommonData.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Core\Farm.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Core\Log.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Core\MinerManager.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Core\Workers\Worker.cpp">
+      <Filter>Core\Workers</Filter>
+    </ClCompile>
+    <ClCompile Include="Core\Workers\Miner.cpp">
+      <Filter>Core\Workers</Filter>
+    </ClCompile>
+    <ClCompile Include="Core\Workers\XCpuMiner.cpp">
+      <Filter>Core\Workers</Filter>
+    </ClCompile>
+    <ClCompile Include="Core\Workers\CLMiner.cpp">
+      <Filter>Core\Workers</Filter>
+    </ClCompile>
+    <ClCompile Include="XDagCore\XAddress.cpp">
+      <Filter>XDagCore</Filter>
+    </ClCompile>
+    <ClCompile Include="XDagCore\XBlock.cpp">
+      <Filter>XDagCore</Filter>
+    </ClCompile>
+    <ClCompile Include="XDagCore\XHash.cpp">
+      <Filter>XDagCore</Filter>
+    </ClCompile>
+    <ClCompile Include="XDagCore\XNetwork.cpp">
+      <Filter>XDagCore</Filter>
+    </ClCompile>
+    <ClCompile Include="XDagCore\XPool.cpp">
+      <Filter>XDagCore</Filter>
+    </ClCompile>
+    <ClCompile Include="XDagCore\XTaskProcessor.cpp">
+      <Filter>XDagCore</Filter>
+    </ClCompile>
+    <ClCompile Include="XDagCore\XTaskWrapper.cpp">
+      <Filter>XDagCore</Filter>
+    </ClCompile>
+    <ClCompile Include="XDagCore\dar\crc_c.cpp">
+      <Filter>XDagCore\dar</Filter>
+    </ClCompile>
+    <ClCompile Include="XDagCore\dfstools\dfslib_crypt.cpp">
+      <Filter>XDagCore\dfstools</Filter>
+    </ClCompile>
+    <ClCompile Include="XDagCore\dfstools\dfslib_string.cpp">
+      <Filter>XDagCore\dfstools</Filter>
+    </ClCompile>
+    <ClCompile Include="XDagCore\win\system.cpp">
+      <Filter>XDagCore\win</Filter>
+    </ClCompile>
+    <ClCompile Include="miner_runtime.cpp" />
+    <ClCompile Include="CoreV2\miner_manager.cpp">
+      <Filter>CoreV2</Filter>
+    </ClCompile>
+    <ClCompile Include="CoreV2\miner_device.cpp">
+      <Filter>CoreV2</Filter>
+    </ClCompile>
+    <ClCompile Include="CoreV2\cl_device_utils.cpp">
+      <Filter>CoreV2</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Hash\sha256.h">
+      <Filter>Hash</Filter>
+    </ClInclude>
+    <ClInclude Include="Hash\sha256_mod.h">
+      <Filter>Hash</Filter>
+    </ClInclude>
+    <ClInclude Include="Utils\CpuInfo.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Utils\PathUtils.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Utils\Random.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Utils\StringFormat.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Utils\Utils.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\Common.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\CommonData.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\Exceptions.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\Farm.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\Guards.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\Log.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\MinerManager.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\Terminal.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\Workers\Miner.h">
+      <Filter>Core\Workers</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\Workers\Worker.h">
+      <Filter>Core\Workers</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\Workers\XCpuMiner.h">
+      <Filter>Core\Workers</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\Workers\CLMiner.h">
+      <Filter>Core\Workers</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\CL\cl2.hpp">
+      <Filter>Core\CL</Filter>
+    </ClInclude>
+    <ClInclude Include="XDagCore\XAddress.h">
+      <Filter>XDagCore</Filter>
+    </ClInclude>
+    <ClInclude Include="XDagCore\XBlock.h">
+      <Filter>XDagCore</Filter>
+    </ClInclude>
+    <ClInclude Include="XDagCore\XHash.h">
+      <Filter>XDagCore</Filter>
+    </ClInclude>
+    <ClInclude Include="XDagCore\XHash.hpp">
+      <Filter>XDagCore</Filter>
+    </ClInclude>
+    <ClInclude Include="XDagCore\XNetwork.h">
+      <Filter>XDagCore</Filter>
+    </ClInclude>
+    <ClInclude Include="XDagCore\XPool.h">
+      <Filter>XDagCore</Filter>
+    </ClInclude>
+    <ClInclude Include="XDagCore\XTaskProcessor.h">
+      <Filter>XDagCore</Filter>
+    </ClInclude>
+    <ClInclude Include="XDagCore\XTaskWrapper.h">
+      <Filter>XDagCore</Filter>
+    </ClInclude>
+    <ClInclude Include="XDagCore\XTime.h">
+      <Filter>XDagCore</Filter>
+    </ClInclude>
+    <ClInclude Include="XDagCore\dar\crc.h">
+      <Filter>XDagCore\dar</Filter>
+    </ClInclude>
+    <ClInclude Include="XDagCore\dfstools\dfslib_crypt.h">
+      <Filter>XDagCore\dfstools</Filter>
+    </ClInclude>
+    <ClInclude Include="XDagCore\dfstools\dfslib_string.h">
+      <Filter>XDagCore\dfstools</Filter>
+    </ClInclude>
+    <ClInclude Include="XDagCore\dfstools\dfslib_types.h">
+      <Filter>XDagCore\dfstools</Filter>
+    </ClInclude>
+    <ClInclude Include="XDagCore\win\netinet\in.h">
+      <Filter>XDagCore\win\netinet</Filter>
+    </ClInclude>
+    <ClInclude Include="XDagCore\win\sys\time.h">
+      <Filter>XDagCore\win\sys</Filter>
+    </ClInclude>
+    <ClInclude Include="stdafx.h" />
+    <ClInclude Include="miner_runtime.h" />
+    <ClInclude Include="CoreV2\miner_manager.h">
+      <Filter>CoreV2</Filter>
+    </ClInclude>
+    <ClInclude Include="CoreV2\miner_device.h">
+      <Filter>CoreV2</Filter>
+    </ClInclude>
+    <ClInclude Include="CoreV2\cl_device_utils.h">
+      <Filter>CoreV2</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+    <None Include="Core\CL\CLMiner_kernel.cl">
+      <Filter>Core\CL</Filter>
+    </None>
+  </ItemGroup>
+</Project>
