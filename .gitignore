@@ -1,0 +1,23 @@
+# Visual Studio Files
+XDaggerMinerWin.VC.db
+XDaggerMinerWin.VC.VC.opendb
+.vs
+
+# Built Files
+Debug
+ipch
+x64
+packages
+
+XDaggerMinerRuntime\x64
+XDaggerMinerRuntime\Debug
+XDaggerMinerRuntimeCLI\x64
+
+XDaggerMinerDaemon\bin
+XDaggerMinerDaemon\obj
+XDaggerMinerService\bin
+XDaggerMinerService\obj
+
+
+
+
