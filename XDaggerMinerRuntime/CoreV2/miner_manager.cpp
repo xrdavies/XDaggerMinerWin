@@ -44,6 +44,7 @@ std::vector< MinerDevice* > MinerManager::getAllMinerDevices()
 
 	if (platformList.empty())
 	{
+		logError(0, "No Platform founded on this device.");
 		//// XCL_LOG("No OpenCL platforms found.");
 		return resultList;
 	}
@@ -72,6 +73,7 @@ std::vector< MinerDevice* > MinerManager::getAllMinerDevices()
 		
 		if (devices.empty())
 		{
+			logInformation(0, "No Device founded on this Platform.");
 			continue;
 		}
 

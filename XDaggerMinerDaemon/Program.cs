@@ -16,8 +16,6 @@ namespace XDaggerMinerDaemon
         {
             MainConsole console = new MainConsole(args);
             console.Execute();
-
-            Console.ReadKey();
         }
     };
 

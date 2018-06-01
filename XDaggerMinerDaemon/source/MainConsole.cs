@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
+using Newtonsoft.Json;
 
 using XDaggerMinerRuntimeCLI;
 
@@ -48,8 +48,26 @@ namespace XDaggerMinerDaemon
                 logger.WriteLog(3, 0, "Cannot Execute due to previous initialization failure.");
             }
 
-            minerManager.DoMining(minerConfig.PoolAddress, minerConfig.WalletAddress);
+            if (rawArguments.Length == 0)
+            {
+                // Do nothing if there is no argument
+                return;
+            }
 
+            if (rawArguments[0] == "-l")
+            {
+                // List all devices
+                List<MinerDevice> deviceList = minerManager.GetAllMinerDevices();
+                List<MinerDeviceOutput> deviceOutputList = new List<MinerDeviceOutput>();
+                foreach(MinerDevice device in deviceList)
+                {
+                    MinerDeviceOutput outp = new MinerDeviceOutput(device);
+                    deviceOutputList.Add(outp);
+                }
+
+                string output = JsonConvert.SerializeObject(deviceOutputList);
+                Console.WriteLine(output);
+            }
 
         }
 

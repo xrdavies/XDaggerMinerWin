@@ -107,10 +107,11 @@
       <AdditionalDependencies>OpenCL.lib;shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <ProjectReference>
-      <UseLibraryDependencyInputs>false</UseLibraryDependencyInputs>
+      <UseLibraryDependencyInputs>true</UseLibraryDependencyInputs>
     </ProjectReference>
     <PostBuildEvent>
-      <Command>copy Core\CL\CLMiner_kernel.cl "$(OutDir)CLMiner_kernel.cl" /Y</Command>
+      <Command>copy Core\CL\CLMiner_kernel.cl "$(OutDir)CLMiner_kernel.cl" /Y
+copy External\OpenCL.dll "$(OutDir)OpenCL.dll" /Y</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -145,8 +146,12 @@
       <LinkTimeCodeGeneration>Default</LinkTimeCodeGeneration>
     </Link>
     <PostBuildEvent>
-      <Command>copy Core\CL\CLMiner_kernel.cl "$(OutDir)CLMiner_kernel.cl" /Y</Command>
+      <Command>copy Core\CL\CLMiner_kernel.cl "$(OutDir)CLMiner_kernel.cl" /Y
+copy External\OpenCL.dll "$(OutDir)OpenCL.dll" /Y</Command>
     </PostBuildEvent>
+    <ProjectReference>
+      <UseLibraryDependencyInputs>true</UseLibraryDependencyInputs>
+    </ProjectReference>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="CoreV2\cl_device_utils.cpp" />
@@ -224,6 +229,10 @@
   <ItemGroup>
     <None Include="Core\CL\CLMiner_kernel.cl">
       <DeploymentContent>false</DeploymentContent>
+    </None>
+    <None Include="External\OpenCL.dll">
+      <DeploymentContent>true</DeploymentContent>
+      <FileType>CppControl</FileType>
     </None>
     <None Include="packages.config" />
   </ItemGroup>

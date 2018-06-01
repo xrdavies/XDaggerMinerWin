@@ -71,6 +71,7 @@
     <Compile Include="source\ConsoleLogger.cs" />
     <Compile Include="source\MainConsole.cs" />
     <Compile Include="source\MinerConfig.cs" />
+    <Compile Include="source\MinerDeviceOutput.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
