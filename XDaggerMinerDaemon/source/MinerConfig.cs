@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -28,7 +29,7 @@ namespace XDaggerMinerDaemon
             this.IsFakeRun = configFile.is_fake_run;
             this.WalletAddress = configFile.wallet_address;
             this.PoolAddress = configFile.pool_address;
-
+            this.SelectedDeviceId = configFile.selected_device_id;
         }
 
         #region Properties for Config
@@ -53,17 +54,22 @@ namespace XDaggerMinerDaemon
             get; private set;
         }
 
+        public long SelectedDeviceId
+        {
+            get; set;
+        }
+
         #endregion
 
         public static MinerConfig ReadFromFile()
         {
-            var location = System.Reflection.Assembly.GetEntryAssembly().Location;
+            var location = System.Reflection.Assembly.GetExecutingAssembly().Location;
             var directoryPath = Path.GetDirectoryName(location);
 
-            using (StreamReader sr = new StreamReader(directoryPath + "/" + defaultConfigFileName))
+            using (StreamReader sr = new StreamReader(Path.Combine(directoryPath, defaultConfigFileName)))
             {
                 string jsonString = sr.ReadToEnd();
-                MinerConfigFile configFile = Newtonsoft.Json.JsonConvert.DeserializeObject<MinerConfigFile>(jsonString);
+                MinerConfigFile configFile = JsonConvert.DeserializeObject<MinerConfigFile>(jsonString);
 
                 MinerConfig config = new MinerConfig(configFile);
                 return config;
@@ -72,15 +78,19 @@ namespace XDaggerMinerDaemon
 
         public void SaveToFile()
         {
+            var location = System.Reflection.Assembly.GetExecutingAssembly().Location;
+            var directoryPath = Path.GetDirectoryName(location);
+
             MinerConfigFile configFile = new MinerConfigFile();
             configFile.version = this.Version;
             configFile.is_fake_run = this.IsFakeRun;
             configFile.pool_address = this.PoolAddress;
             configFile.wallet_address = this.WalletAddress;
+            configFile.selected_device_id = this.SelectedDeviceId;
 
-            using (StreamWriter sw = new StreamWriter(defaultConfigFileName))
+            using (StreamWriter sw = new StreamWriter(Path.Combine(directoryPath, defaultConfigFileName)))
             {
-                string content = Newtonsoft.Json.JsonConvert.SerializeObject(configFile);
+                string content = JsonConvert.SerializeObject(configFile, Formatting.Indented);
                 sw.Write(content);
             }
         }
@@ -102,18 +112,19 @@ namespace XDaggerMinerDaemon
 
             }
 
-            public string id;
-            public string display_name;
-            public string driver_version;
+            public string id = string.Empty;
+            public string display_name = string.Empty;
+            public string driver_version = string.Empty;
         };
 
 
-        public string version;
-        public string pool_address;
-        public string wallet_address;
-        public string machine_name;
-        public string ip_address;
-        public bool is_fake_run;
+        public string version = string.Empty;
+        public string pool_address = string.Empty;
+        public string wallet_address = string.Empty;
+        public string machine_name = string.Empty;
+        public string ip_address = string.Empty;
+        public bool is_fake_run = true;
+        public long selected_device_id = 0;
 
         public List<MinerConfigDevice> device_list;
     };

@@ -75,6 +75,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="DaemonScript.ps1">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="miner-config.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

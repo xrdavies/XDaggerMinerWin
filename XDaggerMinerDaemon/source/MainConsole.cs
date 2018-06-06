@@ -68,7 +68,31 @@ namespace XDaggerMinerDaemon
                 string output = JsonConvert.SerializeObject(deviceOutputList);
                 Console.WriteLine(output);
             }
+            else if (rawArguments[0] == "-d")
+            {
+                if (rawArguments.Length < 2)
+                {
+                    Console.WriteLine("{ 'result':'-1', 'error':'Argument Error.'}");
+                    return;
+                }
 
+                long deviceId = 0;
+                if (!Int64.TryParse(rawArguments[1], out deviceId))
+                {
+                    Console.WriteLine("{ 'result':'-1', 'error':'Cannot Parse DeviceId.'}");
+                    return;
+                }
+
+                // Update the selected Device Id
+
+                MinerConfig config = MinerConfig.ReadFromFile();
+                config.SelectedDeviceId = deviceId;
+                config.SaveToFile();
+
+                Console.WriteLine("{ 'result':'0' }");
+                return;
+
+            }
         }
 
     }
