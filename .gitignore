@@ -9,14 +9,14 @@ ipch
 x64
 packages
 
-XDaggerMinerRuntime\x64
-XDaggerMinerRuntime\Debug
-XDaggerMinerRuntimeCLI\x64
+XDaggerMinerRuntime/x64
+XDaggerMinerRuntime/Debug
+XDaggerMinerRuntimeCLI/x64
 
-XDaggerMinerDaemon\bin
-XDaggerMinerDaemon\obj
-XDaggerMinerService\bin
-XDaggerMinerService\obj
+XDaggerMinerDaemon/bin
+XDaggerMinerDaemon/obj
+XDaggerMinerService/bin
+XDaggerMinerService/obj
 
 
 
