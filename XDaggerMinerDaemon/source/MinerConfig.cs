@@ -12,7 +12,6 @@ namespace XDaggerMinerDaemon
     {
         private static readonly string defaultConfigFileName = @"miner-config.json";
     
-
         public MinerConfig()
         {
 
@@ -29,7 +28,7 @@ namespace XDaggerMinerDaemon
             this.IsFakeRun = configFile.is_fake_run;
             this.WalletAddress = configFile.wallet_address;
             this.PoolAddress = configFile.pool_address;
-            this.SelectedDeviceId = configFile.selected_device_id;
+            this.Device = MinerConfigDevice.CreateFromFile(configFile.device);
         }
 
         #region Properties for Config
@@ -59,6 +58,11 @@ namespace XDaggerMinerDaemon
             get; set;
         }
 
+        public MinerConfigDevice Device
+        {
+            get; private set;
+        }
+
         #endregion
 
         public static MinerConfig ReadFromFile()
@@ -86,7 +90,7 @@ namespace XDaggerMinerDaemon
             configFile.is_fake_run = this.IsFakeRun;
             configFile.pool_address = this.PoolAddress;
             configFile.wallet_address = this.WalletAddress;
-            configFile.selected_device_id = this.SelectedDeviceId;
+            configFile.device = this.Device.ToConfigFile();
 
             using (StreamWriter sw = new StreamWriter(Path.Combine(directoryPath, defaultConfigFileName)))
             {
@@ -97,7 +101,48 @@ namespace XDaggerMinerDaemon
 
 
     };
-    
+
+    public class MinerConfigDevice
+    {
+        public static MinerConfigDevice CreateFromFile(MinerConfigFile.MinerConfigFileDevice deviceFile)
+        {
+            MinerConfigDevice device = new MinerConfigDevice();
+            device.DeviceId = deviceFile.id;
+
+            return device;
+        }
+
+        public MinerConfigDevice()
+        {
+
+        }
+
+        public MinerConfigDevice(string deviceId, string displayName)
+        {
+            this.DeviceId = deviceId;
+            this.DisplayName = displayName;
+        }
+
+        public MinerConfigFile.MinerConfigFileDevice ToConfigFile()
+        {
+            MinerConfigFile.MinerConfigFileDevice deviceFile = new MinerConfigFile.MinerConfigFileDevice();
+            deviceFile.id = this.DeviceId;
+            deviceFile.display_name = this.DisplayName;
+
+            return deviceFile;
+        }
+
+        public string DeviceId
+        {
+            get; private set;
+        }
+
+        public string DisplayName
+        {
+            get; private set;
+        }
+    }
+
     public class MinerConfigFile
     {
         public MinerConfigFile()
@@ -105,9 +150,9 @@ namespace XDaggerMinerDaemon
 
         }
 
-        public class MinerConfigDevice
+        public class MinerConfigFileDevice
         {
-            public MinerConfigDevice()
+            public MinerConfigFileDevice()
             {
 
             }
@@ -124,8 +169,8 @@ namespace XDaggerMinerDaemon
         public string machine_name = string.Empty;
         public string ip_address = string.Empty;
         public bool is_fake_run = true;
-        public long selected_device_id = 0;
+        public MinerConfigFileDevice device = null;
 
-        public List<MinerConfigDevice> device_list;
+        public List<MinerConfigFileDevice> device_list;
     };
 }

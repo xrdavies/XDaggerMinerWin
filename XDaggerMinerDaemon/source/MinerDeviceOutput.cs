@@ -18,9 +18,12 @@ namespace XDaggerMinerDaemon
         {
             this.DeviceId = device.GetDeviceId();
             this.DisplayName = device.GetDisplayName();
+            this.DeviceVersion = device.GetDeviceVersion();
+            this.DriverVersion = device.GetDriverVersion();
+
         }
 
-        public long DeviceId
+        public string DeviceId
         {
             get; private set;
         }
@@ -31,5 +34,14 @@ namespace XDaggerMinerDaemon
             get; private set;
         }
 
+        public string DeviceVersion
+        {
+            get; private set;
+        }
+
+        public string DriverVersion
+        {
+            get; private set;
+        }
     }
 }

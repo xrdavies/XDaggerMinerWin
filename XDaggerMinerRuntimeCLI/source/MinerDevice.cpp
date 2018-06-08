@@ -9,14 +9,15 @@ MinerDevice::MinerDevice()
 
 }
 
-MinerDevice::MinerDevice(long deviceId, String ^ displayName)
+MinerDevice::MinerDevice(String ^ deviceId, String ^ displayName, String ^ deviceVersion, String ^ driverVersion)
 {
 	this->deviceId = deviceId;
 	this->displayName = displayName;
-
+	this->deviceVersion = deviceVersion;
+	this->driverVersion = driverVersion;
 }
 
-long MinerDevice::GetDeviceId()
+String ^ MinerDevice::GetDeviceId()
 {
 	return this->deviceId;
 }
@@ -24,4 +25,14 @@ long MinerDevice::GetDeviceId()
 String ^ MinerDevice::GetDisplayName()
 {
 	return this->displayName;
+}
+
+String ^ MinerDevice::GetDeviceVersion()
+{
+	return this->deviceVersion;
+}
+
+String ^ MinerDevice::GetDriverVersion()
+{
+	return this->driverVersion;
 }

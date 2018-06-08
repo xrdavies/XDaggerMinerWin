@@ -42,8 +42,12 @@ List<MinerDevice^>^ MinerManager::GetAllMinerDevices()
 
 	for (auto const &rawDevice : rawDevices)
 	{
+		String ^ deviceId = msclr::interop::marshal_as<System::String^>(rawDevice->getDeviceId());
 		String ^ displayName = msclr::interop::marshal_as<System::String^>(rawDevice->getDisplayName());
-		MinerDevice^ device = gcnew MinerDevice(rawDevice->getDeviceId(), displayName);
+		String ^ deviceVersion = msclr::interop::marshal_as<System::String^>(rawDevice->getDeviceVersion());
+		String ^ driverVersion = msclr::interop::marshal_as<System::String^>(rawDevice->getDriverVersion());
+
+		MinerDevice^ device = gcnew MinerDevice(deviceId, displayName, deviceVersion, driverVersion);
 		resultList->Add(device);
 	}
 

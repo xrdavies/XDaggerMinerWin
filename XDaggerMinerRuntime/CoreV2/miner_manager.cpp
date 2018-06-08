@@ -54,6 +54,7 @@ std::vector< MinerDevice* > MinerManager::getAllMinerDevices()
 		? CL_DEVICE_TYPE_ALL
 		: CL_DEVICE_TYPE_GPU | CL_DEVICE_TYPE_ACCELERATOR;
 
+	int platformId = 0;
 	for (auto const &platform : platformList) // access by reference to avoid copying
 	{
 		std::vector<cl::Device> devices;
@@ -70,21 +71,31 @@ std::vector< MinerDevice* > MinerManager::getAllMinerDevices()
 				throw err;
 			}
 		}
-		
+
 		if (devices.empty())
 		{
 			logInformation(0, "No Device founded on this Platform.");
 			continue;
 		}
 
+		int deviceId = 0;
 		for (auto const &device : devices)
 		{
 			std::string deviceName = device.getInfo<CL_DEVICE_NAME>();
 
-			MinerDevice * deviceObject = new MinerDevice(deviceName, 1);
+			std::string deviceIdString = "_d_" + std::to_string(deviceId);
+			deviceIdString = "p_" + std::to_string(platformId) + deviceIdString;
+
+			std::string deviceVersion = device.getInfo<CL_DEVICE_VERSION>();
+			std::string driverVersion = device.getInfo<CL_DRIVER_VERSION>();
+
+			MinerDevice * deviceObject = new MinerDevice(deviceIdString, deviceName, deviceVersion, driverVersion);
 			resultList.push_back(deviceObject);
 			
+			deviceId ++;
 		}
+
+		platformId ++;
 	}
 
 	return resultList;

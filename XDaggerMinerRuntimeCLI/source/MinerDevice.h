@@ -13,14 +13,18 @@ namespace XDaggerMinerRuntimeCLI {
 	{
 	public: 
 		MinerDevice();
-		MinerDevice(long deviceId, String ^ displayName);
+		MinerDevice(String ^ deviceId, String ^ displayName, String ^ deviceVersion, String ^ driverVersion);
 
-		long GetDeviceId();
+		String ^ GetDeviceId();
 		String ^ GetDisplayName();
+		String ^ GetDeviceVersion();
+		String ^ GetDriverVersion();
 
 	private:
-		long deviceId;
+		String ^ deviceId;
 		String ^ displayName;
+		String ^ deviceVersion;
+		String ^ driverVersion;
 
 	};
 
