@@ -36,13 +36,17 @@ Service:
 ## Build Instruction
 
 
-	1. Windows 10 and Visual Studio 2015 (with Blend SDK).
+	1. Windows 10 and Visual Studio 2015.
+	
+	Note: If you Have Visual Studio 2017, you will need to install the component: Visual Studio Installer -> VC++ Components -> Visual Studio 2015 Build Tools (v140)
+	
 
-	2. Install Nvidia GPU Computing Tookit (CUDA).
+	2. Install Nvidia GPU Computing Tookit (CUDA) (https://developer.nvidia.com/cuda-downloads)
 
 	3. Open the solution in VS, "Project" -> "Properties" -> "Configuration Properties" -> "C/C++" -> "General" -> "AdditionalIncludeDirectories", input the following:
 		C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v9.1\include;
 		
+	Note: The v9.1 is the version number from CUDA that you downloaded from step 2.
 		
 	4. In "Project" -> "Properties" -> "Configuration Properties" -> "Linker" -> "General" -> "Additional Library Directories":
 		C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v9.1\lib\x64
@@ -52,7 +56,13 @@ Service:
 	6. Run:
 
 		cd x64/Debug
-		XDaggerMinerDaemon.exe
 		
-		(Hard coded wallet address: gKNRtSL1pUaTpzMuPMznKw49ILtP6qX3, Poll: pool.xdag.us:13654)
+		XDaggerMinerDaemon.exe -l
+		XDaggerMinerDaemon.exe --List
+		
+		XDaggerMinerDaemon.exe -c '{ "Wallet":"gKNRtSL1pUaTpzMuPMznKw49ILtP6qX3", "Pool":"pool.xdag.us:13654" }'
+		XDaggerMinerDaemon.exe --Configure '{ "Wallet":"gKNRtSL1pUaTpzMuPMznKw49ILtP6qX3", "Pool":"pool.xdag.us:13654" DeviceId:"1" }'
+		
+		
+		(Hard coded Pool:"pool.xdag.us:13654" )
 		
