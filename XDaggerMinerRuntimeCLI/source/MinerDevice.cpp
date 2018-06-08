@@ -36,3 +36,8 @@ String ^ MinerDevice::GetDriverVersion()
 {
 	return this->driverVersion;
 }
+
+bool MinerDevice::IsMatchId(String ^ deviceId)
+{
+	return this->deviceId->Equals(deviceId, System::StringComparison::InvariantCultureIgnoreCase);
+}

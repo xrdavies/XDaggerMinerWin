@@ -20,6 +20,8 @@ namespace XDaggerMinerRuntimeCLI {
 		String ^ GetDeviceVersion();
 		String ^ GetDriverVersion();
 
+		bool IsMatchId(String ^ deviceId);
+
 	private:
 		String ^ deviceId;
 		String ^ displayName;

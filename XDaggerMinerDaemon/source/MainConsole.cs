@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
-
+using XDaggerMinerDaemon.Commands;
 using XDaggerMinerRuntimeCLI;
 
 namespace XDaggerMinerDaemon
@@ -48,25 +48,25 @@ namespace XDaggerMinerDaemon
                 logger.WriteLog(3, 0, "Cannot Execute due to previous initialization failure.");
             }
 
-            if (rawArguments.Length == 0)
+            List<CommandInstance> commands = ConsoleCommand.ParseCommands(rawArguments);
+            if (commands.Count == 0)
             {
-                // Do nothing if there is no argument
+                // Do nothing is there is no command
                 return;
             }
 
+            if (commands.Count > 1)
+            {
+                // Not Supported
+                Console.WriteLine("{ 'result':'-1', 'error':'Curent not supporting multiple commands.'}");
+                return;
+            }
+
+            commands[0].Execute();
+            
             if (rawArguments[0] == "-l")
             {
-                // List all devices
-                List<MinerDevice> deviceList = minerManager.GetAllMinerDevices();
-                List<MinerDeviceOutput> deviceOutputList = new List<MinerDeviceOutput>();
-                foreach(MinerDevice device in deviceList)
-                {
-                    MinerDeviceOutput outp = new MinerDeviceOutput(device);
-                    deviceOutputList.Add(outp);
-                }
-
-                string output = JsonConvert.SerializeObject(deviceOutputList);
-                Console.WriteLine(output);
+                
             }
             else if (rawArguments[0] == "-d")
             {
