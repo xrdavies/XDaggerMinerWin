@@ -16,3 +16,8 @@ void LoggerBase::WriteLog(int level, int eventId, String ^ message)
 {
 	// Write the logs
 }
+
+void LoggerBase::WriteTrace(String ^ message)
+{
+	// Write the trace
+}

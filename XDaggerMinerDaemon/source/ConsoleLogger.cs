@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -13,27 +15,68 @@ namespace XDaggerMinerDaemon
     {
         public override void WriteLog(int level, int eventId, string message)
         {
-            string levelString = string.Empty;
+            string formattedMessage = string.Format("[{0}]{1}", eventId, message);
+
+            log4net.ILog log = log4net.LogManager.GetLogger(ConsoleLogger.RetrieveCallerMethod());
             switch (level)
             {
                 case 0:
-                    levelString = "Information";
+                    // Information
+                    log.Info(formattedMessage);
                     break;
                 case 1:
-                    levelString = "Warning";
+                    // Warning
+                    log.Warn(formattedMessage);
                     break;
                 case 2:
-                    levelString = "Error";
+                    // Error
+                    log.Error(formattedMessage);
                     break;
                 case 3:
-                    levelString = "Fatal";
+                    // Fatal
+                    log.Fatal(formattedMessage);
                     break;
                 default:
-                    levelString = "Unknown";
+                    log.Fatal(formattedMessage);
                     break;
             }
+        }
 
-            Console.WriteLine(string.Format("[{0}][{1}] {2}", levelString, eventId, message));
+        public override void WriteTrace(string message)
+        {
+            log4net.ILog log = log4net.LogManager.GetLogger(ConsoleLogger.RetrieveCallerMethod());
+            log.Debug(message);
+        }
+
+        private static string RetrieveCallerMethod()
+        {
+            int stackTraceIndex = 1;
+            string fullMethodName = string.Empty;
+
+            while (true)
+            {
+                try
+                {
+                    StackFrame frm = new StackFrame(stackTraceIndex);
+                    MethodInfo mi = (MethodInfo)frm.GetMethod();
+                    if (mi.DeclaringType != System.Reflection.MethodBase.GetCurrentMethod().DeclaringType)
+                    {
+                        string methodSignature = mi.ToString();
+                        methodSignature = methodSignature.Substring(methodSignature.IndexOf(' ') + 1);
+                        fullMethodName = string.Format("{0}.{1}", mi.DeclaringType, methodSignature);
+                        break;
+                    }
+
+                    stackTraceIndex++;
+                }
+                catch (Exception)
+                {
+                    // Just break
+                    break;
+                }
+            }
+
+            return fullMethodName;
         }
     }
 }

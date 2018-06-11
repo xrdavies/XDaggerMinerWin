@@ -24,6 +24,7 @@
 extern "C"
 {
 	typedef void(__stdcall * LoggerCallback)(int, int, std::string);
+	typedef void(__stdcall * TraceCallback)(std::string);
 
 }
 
