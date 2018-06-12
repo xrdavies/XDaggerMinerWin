@@ -27,13 +27,14 @@ namespace XDaggerMinerDaemon.Commands
             get; set;
         }
 
-        public void Execute()
+        public CommandResult Execute()
         {
             if (this.command != null)
             {
-                this.command.Execute(this.Parameter);
+                return this.command.Execute(this.Parameter);
             }
-        }
 
+            return CommandResult.ErrorResult(101, "Cannot Trigger Command.");
+        }
     }
 }

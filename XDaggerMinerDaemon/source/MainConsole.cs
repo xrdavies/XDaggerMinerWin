@@ -55,44 +55,19 @@ namespace XDaggerMinerDaemon
                 return;
             }
 
+            CommandResult result = null;
             if (commands.Count > 1)
             {
                 // Not Supported
-                Console.WriteLine("{ 'result':'-1', 'error':'Curent not supporting multiple commands.'}");
-                return;
+                result = CommandResult.ErrorResult(99318, "Curent not supporting multiple commands.");
             }
-
-            commands[0].Execute();
-            
-            if (rawArguments[0] == "-l")
+            else
             {
-                
+                result = commands[0].Execute();
             }
-            else if (rawArguments[0] == "-d")
-            {
-                if (rawArguments.Length < 2)
-                {
-                    Console.WriteLine("{ 'result':'-1', 'error':'Argument Error.'}");
-                    return;
-                }
 
-                long deviceId = 0;
-                if (!Int64.TryParse(rawArguments[1], out deviceId))
-                {
-                    Console.WriteLine("{ 'result':'-1', 'error':'Cannot Parse DeviceId.'}");
-                    return;
-                }
+            Console.WriteLine(result);
 
-                // Update the selected Device Id
-
-                MinerConfig config = MinerConfig.ReadFromFile();
-                config.SelectedDeviceId = deviceId;
-                config.SaveToFile();
-
-                Console.WriteLine("{ 'result':'0' }");
-                return;
-
-            }
         }
 
     }

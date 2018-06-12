@@ -33,7 +33,7 @@ namespace XDaggerMinerDaemon.Commands
             return instance;
         }
 
-        public override void Execute(string parameter)
+        public override CommandResult Execute(string parameter)
         {
             // Update the configuration
             ConfigureParameter configure = null;
@@ -82,7 +82,7 @@ namespace XDaggerMinerDaemon.Commands
             
             config.SaveToFile();
 
-            Console.WriteLine("{ 'result':'0' }");
+            return CommandResult.OKResult();
         }
         
     }

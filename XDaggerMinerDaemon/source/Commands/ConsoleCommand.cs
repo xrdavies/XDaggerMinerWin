@@ -14,7 +14,7 @@ namespace XDaggerMinerDaemon.Commands
 
         public abstract CommandInstance GenerateInstance(string[] arguments, ref int nextIndex);
 
-        public abstract void Execute(string parameter);
+        public abstract CommandResult Execute(string parameter);
 
         public bool IsMatchName(string commandName)
         {

@@ -27,7 +27,7 @@ namespace XDaggerMinerDaemon.Commands
             return instance;
         }
 
-        public override void Execute(string parameter)
+        public override CommandResult Execute(string parameter)
         {
             // List all devices
             MinerManager minerManager = new MinerManager();
@@ -41,11 +41,8 @@ namespace XDaggerMinerDaemon.Commands
                 MinerDeviceOutput outp = new MinerDeviceOutput(device);
                 deviceOutputList.Add(outp);
             }
-
-            string output = JsonConvert.SerializeObject(deviceOutputList);
-            Console.WriteLine(output);
+     
+            return CommandResult.CreateResult(deviceOutputList);
         }
-
-
     }
 }
