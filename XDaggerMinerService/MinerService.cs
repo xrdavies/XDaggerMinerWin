@@ -16,18 +16,21 @@ namespace XDaggerMinerService
 {
     public partial class MinerService : ServiceBase
     {
-
-
         private MinerEventLog minerEventLog;
 
         private MinerManager minerManager;
+
+        private MinerConfig config;
+
 
         public MinerService()
         {
             InitializeComponent();
 
+            config = MinerConfig.ReadFromFile();
+
             minerEventLog = new MinerEventLog();
-            minerManager = new MinerManager();
+            minerManager = new MinerManager(config.IsFakeRun);
             minerManager.SetLogger(minerEventLog);
 
         }
@@ -37,7 +40,7 @@ namespace XDaggerMinerService
             
             // Set up a timer to trigger every minute.  
             System.Timers.Timer timer = new System.Timers.Timer();
-            timer.Interval = 3000;
+            timer.Interval = 10000;
             timer.Elapsed += new System.Timers.ElapsedEventHandler(this.OnTimerWork);
             timer.Start();
 
@@ -72,7 +75,6 @@ namespace XDaggerMinerService
         {
             minerEventLog.WriteInformation(0, "Triggered by Timer.");
 
-            MinerConfig config = MinerConfig.ReadFromFile();
             minerManager.DoMining(config.PoolAddress, config.WalletAddress);
 
         }

@@ -76,8 +76,11 @@ namespace XDaggerMinerRuntime
 		void logWarning(int eventId, std::string message);
 		void logError(int eventId, std::string message);
 
-		void doRealMiningWork();
+		void doRealMiningWork(std::string& poolAddress, std::string& walletAddress);
 		void MinerManager::doFakeMiningWork();
+
+		// Private members
+		bool _isRunning = false;
 
 
 

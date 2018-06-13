@@ -1,8 +1,6 @@
 {
-  "version": "0.1.0605.0",
-  "is_fake_run":  true,
-	"pool_address": "pool.xdag.us:13654",
-	"wallet_address":"gKNRtSL1pUaTpzMuPMznKw49ILtP6qX3",
-	"machine_name": "YISUIDESKTOP9",
-	"ip_address": "127.0.0.1"
+  "version": "0.1.0613.0",
+  "is_fake_run": false,
+  "pool_address": "pool.xdag.us:13654",
+  "wallet_address": "gKNRtSL1pUaTpzMuPMznKw49ILtP6qX3"
 }

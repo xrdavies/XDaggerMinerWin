@@ -103,25 +103,27 @@ std::vector< MinerDevice* > MinerManager::getAllMinerDevices()
 
 void MinerManager::doMining(std::string poolAddress, std::string walletAddress)
 {
-	
 	if (_isFakeRun)
 	{
 		doFakeMiningWork();
 	}
 	else
 	{
-		doRealMiningWork();
+		doRealMiningWork(poolAddress, walletAddress);
 	}
 }
 
-void MinerManager::doRealMiningWork()
+void MinerManager::doRealMiningWork(std::string& poolAddress, std::string& walletAddress)
 {
-	XTaskProcessor taskProcessor;
-	//XPool pool(walletAddress, poolAddress, &taskProcessor);
-	std::string poolAddress = "";
-	std::string walletAddress = "";
+	if (_isRunning)
+	{
+		// Just return if it's already running
+		logInformation(0, "Skipp this round since the manager is still running.");
+		return;
+	}
 
-	XPool pool(poolAddress, walletAddress, &taskProcessor);
+	XTaskProcessor taskProcessor;
+	XPool pool(walletAddress, poolAddress, &taskProcessor);
 
 	Farm farm(&taskProcessor);
 
@@ -132,7 +134,7 @@ void MinerManager::doRealMiningWork()
 	}
 	if (!pool.Connect())
 	{
-		logError(0, "Cannot connect to pool");
+		logError(0, "Cannot connect to pool: " + poolAddress);
 		return;
 	}
 	//wait a bit
@@ -141,7 +143,6 @@ void MinerManager::doRealMiningWork()
 
 	logInformation(0, "Create Farm and Add Seeker...");
 	farm.AddSeeker(Farm::SeekerDescriptor{ &CLMiner::Instances, [](unsigned index, XTaskProcessor* taskProcessor) { return new CLMiner(index, taskProcessor); } });
-
 
 	if (!farm.Start())
 	{
@@ -153,6 +154,8 @@ void MinerManager::doRealMiningWork()
 
 	uint32_t iteration = 0;
 	bool isConnected = true;
+	_isRunning = true;
+
 	while (_running)
 	{
 		if (!isConnected)
@@ -163,6 +166,7 @@ void MinerManager::doRealMiningWork()
 				if (!farm.Start())
 				{
 					logError(0, "Failed to restart mining");
+					_isRunning = false;
 					return;
 				}
 			}
@@ -179,9 +183,9 @@ void MinerManager::doRealMiningWork()
 			pool.Disconnect();
 			farm.Stop();
 			isConnected = false;
-			logError(0, "Failed to get data from pool. Reconnection...");
-			this_thread::sleep_for(chrono::milliseconds(5000));
-			continue;
+			_isRunning = false;
+			logError(0, "Failed to get data from pool. Stop this iteration...");
+			return;
 		}
 
 		if (iteration > 0 && (iteration & 1) == 0)
@@ -194,6 +198,7 @@ void MinerManager::doRealMiningWork()
 		++iteration;
 	}
 
+	_isRunning = false;
 	farm.Stop();
 }
 
