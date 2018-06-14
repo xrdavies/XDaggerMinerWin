@@ -60,7 +60,9 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Configuration.Install" />
     <Reference Include="System.Core" />
+    <Reference Include="System.ServiceProcess" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -76,6 +78,7 @@
     <Compile Include="source\Commands\ConfigureCommand.cs" />
     <Compile Include="source\Commands\ConsoleCommand.cs" />
     <Compile Include="source\Commands\ListDevicesCommand.cs" />
+    <Compile Include="source\Commands\ServiceCommand.cs" />
     <Compile Include="source\ConsoleLogger.cs" />
     <Compile Include="source\MainConsole.cs" />
     <Compile Include="source\MinerConfig.cs" />

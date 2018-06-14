@@ -23,7 +23,7 @@ namespace XDaggerMinerService
 
         private void serviceInstaller_BeforeInstall(object sender, InstallEventArgs e)
         {
-            string instanceId = Context.Parameters["InstanceId"];
+            string instanceId = Context.Parameters["instance"];
 
             if (!string.IsNullOrEmpty(instanceId))
             {

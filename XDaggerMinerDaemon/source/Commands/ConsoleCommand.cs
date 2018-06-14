@@ -16,6 +16,11 @@ namespace XDaggerMinerDaemon.Commands
 
         public abstract CommandResult Execute(string parameter);
 
+        public virtual void Validate()
+        {
+
+        }
+
         public bool IsMatchName(string commandName)
         {
             return commandName.Equals(GetShortName(), StringComparison.InvariantCultureIgnoreCase)
@@ -32,7 +37,8 @@ namespace XDaggerMinerDaemon.Commands
             List<ConsoleCommand> availableCommandList = new List<ConsoleCommand>();
             availableCommandList.Add(new ListDevicesCommand());
             availableCommandList.Add(new ConfigureCommand());
-
+            availableCommandList.Add(new ServiceCommand());
+            
             foreach (ConsoleCommand command in availableCommandList)
             {
                 if (command.IsMatchName(arguments[nextIndex]))
