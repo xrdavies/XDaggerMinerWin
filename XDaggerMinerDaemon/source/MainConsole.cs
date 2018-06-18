@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -37,8 +38,6 @@ namespace XDaggerMinerDaemon
             {
                 logger.WriteLog(3, 0, "Read config file failed: " + ex.ToString());
             }
-
-            
         }
 
         public void Execute()
@@ -63,12 +62,21 @@ namespace XDaggerMinerDaemon
             }
             else
             {
-                result = commands[0].Execute();
+                // Disable the Console output during the command call
+                TextWriter defaultOutput = Console.Out;
+
+                try
+                {
+                    Console.SetOut(TextWriter.Null);
+                    result = commands[0].Execute();
+                }
+                finally
+                {
+                    Console.SetOut(defaultOutput);
+                }
             }
 
             Console.WriteLine(result);
-
         }
-
     }
 }
