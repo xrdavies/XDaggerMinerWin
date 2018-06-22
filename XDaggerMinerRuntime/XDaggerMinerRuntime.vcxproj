@@ -144,10 +144,12 @@ copy External\OpenCL.dll "$(OutDir)OpenCL.dll" /Y</Command>
       <AdditionalLibraryDirectories>C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v9.2\lib\x64;$(SolutionDir)</AdditionalLibraryDirectories>
       <AdditionalDependencies>OpenCL.lib;shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <LinkTimeCodeGeneration>Default</LinkTimeCodeGeneration>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
     </Link>
     <PostBuildEvent>
       <Command>copy Core\CL\CLMiner_kernel.cl "$(OutDir)CLMiner_kernel.cl" /Y
-copy External\OpenCL.dll "$(OutDir)OpenCL.dll" /Y</Command>
+copy External\OpenCL.dll "$(OutDir)OpenCL.dll" /Y
+del "$(OutDir)*eay32.pdb" /F</Command>
     </PostBuildEvent>
     <ProjectReference>
       <UseLibraryDependencyInputs>false</UseLibraryDependencyInputs>
