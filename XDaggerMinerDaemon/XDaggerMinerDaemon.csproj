@@ -52,8 +52,23 @@
     <StartupObject>XDaggerMinerDaemon.Program</StartupObject>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="buildBom, Version=1.1.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Hub-NuGet.1.1.1\lib\net452\buildBom.exe</HintPath>
+    </Reference>
+    <Reference Include="HubCommon.NET, Version=1.0.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\HubCommon.NET.1.0.1\lib\net452\HubCommon.NET.dll</HintPath>
+    </Reference>
+    <Reference Include="integration-bdio.NET, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\integration-bdio.NET.1.0.0\lib\net452\integration-bdio.NET.dll</HintPath>
+    </Reference>
+    <Reference Include="IntegrationNugetInspector, Version=2.4.0.0, Culture=neutral, processorArchitecture=x86">
+      <HintPath>..\packages\IntegrationNugetInspector.2.4.0\lib\net452\IntegrationNugetInspector.exe</HintPath>
+    </Reference>
     <Reference Include="log4net, Version=2.0.8.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
       <HintPath>..\packages\log4net.2.0.8\lib\net45-full\log4net.dll</HintPath>
+    </Reference>
+    <Reference Include="Mono.HttpUtility, Version=1.0.0.1, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Mono.HttpUtility.1.0.0.1\lib\net40\Mono.HttpUtility.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=11.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.11.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
@@ -78,17 +93,18 @@
     <Compile Include="source\Commands\ConfigureCommand.cs" />
     <Compile Include="source\Commands\ConsoleCommand.cs" />
     <Compile Include="source\Commands\ListDevicesCommand.cs" />
+    <Compile Include="source\Commands\Outputs\ReportOutput.cs" />
+    <Compile Include="source\Commands\ReportCommand.cs" />
     <Compile Include="source\Commands\ServiceCommand.cs" />
+    <Compile Include="source\Common\DaemonCode.cs" />
     <Compile Include="source\ConsoleLogger.cs" />
     <Compile Include="source\MainConsole.cs" />
     <Compile Include="source\MinerConfig.cs" />
-    <Compile Include="source\MinerDeviceOutput.cs" />
+    <Compile Include="source\Commands\Outputs\MinerDeviceOutput.cs" />
+    <Compile Include="source\Utils\ServiceUtil.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-    <None Include="DaemonScript.ps1">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
     <None Include="log4net.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

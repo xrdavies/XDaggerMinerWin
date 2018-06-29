@@ -7,14 +7,12 @@ using System.Reflection;
 using Service = System.ServiceProcess;
 using System.Text;
 using System.Threading.Tasks;
+using XDaggerMinerDaemon.Utils;
 
 namespace XDaggerMinerDaemon.Commands
 {
     public class ServiceCommand : ConsoleCommand
     {
-        private static readonly string ServiceName = @"XDaggerMinerService";
-        private static readonly string ServiceBinaryName = @"XDaggerMinerService.exe";
-
         public override string GetShortName()
         {
             return "-s";
@@ -29,7 +27,7 @@ namespace XDaggerMinerDaemon.Commands
         {
             get
             {
-                return Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), ServiceBinaryName);
+                return Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), ServiceUtil.ServiceBinaryName);
             }
         }
 
@@ -64,7 +62,7 @@ namespace XDaggerMinerDaemon.Commands
         {
             try
             {
-                ManagedInstallerClass.InstallHelper(new string[] { ServiceBinaryFullPath });
+                ServiceUtil.InstallService(ServiceBinaryFullPath);
                 return CommandResult.OKResult();
             }
             catch (Exception ex)
@@ -77,7 +75,7 @@ namespace XDaggerMinerDaemon.Commands
         {
             try
             {
-                ManagedInstallerClass.InstallHelper(new string[] { "/u", ServiceBinaryFullPath });
+                ServiceUtil.UninstallService(ServiceBinaryFullPath);
                 return CommandResult.OKResult();
             }
             catch (Exception ex)
@@ -90,11 +88,7 @@ namespace XDaggerMinerDaemon.Commands
         {
             try
             {
-                Service.ServiceController service = new Service.ServiceController(ServiceName);
-                TimeSpan timeout = TimeSpan.FromMilliseconds(10000);
-
-                service.Start();
-                service.WaitForStatus(Service.ServiceControllerStatus.Running, timeout);
+                ServiceUtil.StartService(ServiceUtil.ServiceName);
 
                 return CommandResult.OKResult();
             }
@@ -112,11 +106,7 @@ namespace XDaggerMinerDaemon.Commands
         {
             try
             {
-                Service.ServiceController service = new Service.ServiceController(ServiceName);
-                TimeSpan timeout = TimeSpan.FromMilliseconds(10000);
-
-                service.Stop();
-                service.WaitForStatus(Service.ServiceControllerStatus.Stopped, timeout);
+                ServiceUtil.StopService(ServiceUtil.ServiceName);
 
                 return CommandResult.OKResult();
             }
@@ -129,5 +119,6 @@ namespace XDaggerMinerDaemon.Commands
                 return CommandResult.ErrorResult(101, ex.ToString());
             }
         }
+
     }
 }

@@ -38,7 +38,8 @@ namespace XDaggerMinerDaemon.Commands
             availableCommandList.Add(new ListDevicesCommand());
             availableCommandList.Add(new ConfigureCommand());
             availableCommandList.Add(new ServiceCommand());
-            
+            availableCommandList.Add(new ReportCommand());
+
             foreach (ConsoleCommand command in availableCommandList)
             {
                 if (command.IsMatchName(arguments[nextIndex]))

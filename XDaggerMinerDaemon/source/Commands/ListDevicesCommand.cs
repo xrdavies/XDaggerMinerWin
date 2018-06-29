@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using XDaggerMinerRuntimeCLI;
+using XDaggerMinerDaemon.Commands.Outputs;
 
 namespace XDaggerMinerDaemon.Commands
 {

@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Diagnostics;
 using System.IO;
+using System.IO.Pipes;
 using System.Linq;
 using System.ServiceProcess;
 using System.Text;
@@ -16,12 +17,17 @@ namespace XDaggerMinerService
 {
     public partial class MinerService : ServiceBase
     {
+        private static readonly string NamedPipeServerNameTemplate = "XDaggerMinerPipe_{0}";
+
         private MinerEventLog minerEventLog;
 
         private MinerManager minerManager;
 
         private MinerConfig config;
 
+        private string instanceId = null;
+
+        private Task pipelineServerTask = null;
 
         public MinerService()
         {
@@ -33,6 +39,10 @@ namespace XDaggerMinerService
             minerManager = new MinerManager(config.IsFakeRun);
             minerManager.SetLogger(minerEventLog);
 
+            pipelineServerTask = new Task(() =>
+            {
+                NamedPipeServerMain();
+            });
         }
 
         protected override void OnStart(string[] args)
@@ -44,6 +54,10 @@ namespace XDaggerMinerService
             timer.Elapsed += new System.Timers.ElapsedEventHandler(this.OnTimerWork);
             timer.Start();
 
+            if (pipelineServerTask.Status != TaskStatus.Running)
+            {
+                pipelineServerTask.Start();
+            }
 
             minerEventLog.WriteInformation(0, "XDaggerMiner Service Started.");
 
@@ -51,6 +65,7 @@ namespace XDaggerMinerService
 
         protected override void OnStop()
         {
+            
             minerEventLog.WriteInformation(0, "XDaggerMiner Service Stopped.");
 
         }
@@ -77,6 +92,80 @@ namespace XDaggerMinerService
 
             minerManager.DoMining(config.PoolAddress, config.WalletAddress);
 
+            if (pipelineServerTask.Status != TaskStatus.Running)
+            {
+                pipelineServerTask.Start();
+            }
+        }
+
+        public void NamedPipeServerMain()
+        {
+            try
+            {
+                using (var server = new NamedPipeServerStream(string.Format(NamedPipeServerNameTemplate, instanceId)))
+                {
+                    using (StreamReader reader = new StreamReader(server))
+                    {
+                        using (StreamWriter writter = new StreamWriter(server))
+                        {
+                            while (true)
+                            {
+                                server.WaitForConnection();
+
+                                while (true)
+                                {
+                                    try
+                                    {
+                                        var line = reader.ReadLine();
+                                        string output = ExecuteNamedPipeCommand(line);
+                                        writter.WriteLine(output);
+                                        writter.Flush();
+                                    }
+                                    catch (IOException)
+                                    {
+                                        server.Disconnect();
+                                        break;
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        server.Disconnect();
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            catch (IOException)
+            {
+                // The NamedPipeServerStream is already opened
+            }
+            catch (Exception ex)
+            {
+                // TODO: Handle the exceptions
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="command"></param>
+        /// <returns></returns>
+        private string ExecuteNamedPipeCommand(string command)
+        {
+            if (command.Equals("status"))
+            {
+                return "running";
+            }
+            if (command.Equals("hashrate"))
+            {
+                return "15.4";
+            }
+            else
+            {
+                return "unknown";
+            }
         }
     }
 }
