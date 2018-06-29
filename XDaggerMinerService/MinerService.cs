@@ -8,6 +8,7 @@ using System.IO.Pipes;
 using System.Linq;
 using System.ServiceProcess;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Timers;
 using XDaggerMinerDaemon;
@@ -112,25 +113,29 @@ namespace XDaggerMinerService
                             {
                                 server.WaitForConnection();
 
-                                while (true)
+                                try
                                 {
-                                    try
+                                    while (true)
                                     {
                                         var line = reader.ReadLine();
                                         string output = ExecuteNamedPipeCommand(line);
                                         writter.WriteLine(output);
                                         writter.Flush();
+
+                                        Thread.Sleep(30);
                                     }
-                                    catch (IOException)
-                                    {
-                                        server.Disconnect();
-                                        break;
-                                    }
-                                    catch (Exception ex)
-                                    {
-                                        server.Disconnect();
-                                        break;
-                                    }
+                                }
+                                catch (IOException)
+                                {
+                                    
+                                }
+                                catch (Exception)
+                                {
+                                    
+                                }
+                                finally
+                                {
+                                    server.Disconnect();
                                 }
                             }
                         }
