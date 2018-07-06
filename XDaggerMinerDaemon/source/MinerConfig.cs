@@ -17,6 +17,7 @@ namespace XDaggerMinerDaemon
 
         }
 
+        /*
         public MinerConfig(MinerConfigFile configFile)
         {
             if (configFile == null)
@@ -30,34 +31,35 @@ namespace XDaggerMinerDaemon
             this.PoolAddress = configFile.pool_address;
             this.Device = MinerConfigDevice.CreateFromFile(configFile.device);
         }
+        */
 
         #region Properties for Config
 
+        [JsonProperty(PropertyName = "version")]
         public string Version
         {
-            get; private set;
+            get; set;
         }
 
+        [JsonProperty(PropertyName = "is_fake_run")]
         public bool IsFakeRun
         {
-            get; private set;
+            get; set;
         }
 
+        [JsonProperty(PropertyName = "wallet")]
         public string WalletAddress
         {
             get; set;
         }
 
+        [JsonProperty(PropertyName = "pool_address")]
         public string PoolAddress
-        {
-            get; private set;
-        }
-
-        public long SelectedDeviceId
         {
             get; set;
         }
 
+        [JsonProperty(PropertyName = "device")]
         public MinerConfigDevice Device
         {
             get; set;
@@ -73,9 +75,7 @@ namespace XDaggerMinerDaemon
             using (StreamReader sr = new StreamReader(Path.Combine(directoryPath, defaultConfigFileName)))
             {
                 string jsonString = sr.ReadToEnd();
-                MinerConfigFile configFile = JsonConvert.DeserializeObject<MinerConfigFile>(jsonString);
-
-                MinerConfig config = new MinerConfig(configFile);
+                MinerConfig config = JsonConvert.DeserializeObject<MinerConfig>(jsonString);
                 return config;
             }
         }
@@ -84,17 +84,10 @@ namespace XDaggerMinerDaemon
         {
             var location = System.Reflection.Assembly.GetExecutingAssembly().Location;
             var directoryPath = Path.GetDirectoryName(location);
-
-            MinerConfigFile configFile = new MinerConfigFile();
-            configFile.version = this.Version;
-            configFile.is_fake_run = this.IsFakeRun;
-            configFile.pool_address = this.PoolAddress;
-            configFile.wallet_address = this.WalletAddress;
-            configFile.device = this.Device?.ToConfigFile();
-
+            
             using (StreamWriter sw = new StreamWriter(Path.Combine(directoryPath, defaultConfigFileName)))
             {
-                string content = JsonConvert.SerializeObject(configFile, Formatting.Indented);
+                string content = JsonConvert.SerializeObject(this, Formatting.Indented);
                 sw.Write(content);
             }
         }
@@ -103,6 +96,7 @@ namespace XDaggerMinerDaemon
 
     public class MinerConfigDevice
     {
+        /*
         public static MinerConfigDevice CreateFromFile(MinerConfigFile.MinerConfigFileDevice deviceFile)
         {
             if (deviceFile == null)
@@ -118,6 +112,7 @@ namespace XDaggerMinerDaemon
 
             return device;
         }
+        */
 
         public MinerConfigDevice()
         {
@@ -132,6 +127,7 @@ namespace XDaggerMinerDaemon
             this.DriverVersion = driverVersion;
         }
 
+        /*
         public MinerConfigFile.MinerConfigFileDevice ToConfigFile()
         {
             MinerConfigFile.MinerConfigFileDevice deviceFile = new MinerConfigFile.MinerConfigFileDevice();
@@ -142,25 +138,30 @@ namespace XDaggerMinerDaemon
 
             return deviceFile;
         }
+        */
 
+        [JsonProperty(PropertyName = "id")]
         public string DeviceId
         {
-            get; private set;
+            get; set;
         }
 
+        [JsonProperty(PropertyName = "display_name")]
         public string DisplayName
         {
-            get; private set;
+            get; set;
         }
 
+        [JsonProperty(PropertyName = "device_version")]
         public string DeviceVersion
         {
-            get; private set;
+            get; set;
         }
 
+        [JsonProperty(PropertyName = "driver_version")]
         public string DriverVersion
         {
-            get; private set;
+            get; set;
         }
     }
 
