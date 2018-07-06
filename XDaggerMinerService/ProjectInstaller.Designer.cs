@@ -45,11 +45,26 @@
             // 
             // serviceInstaller
             // 
-            this.serviceInstaller.Description = "Service for XDagger Miner Pool";
+            /*
+            string instanceId = Context.Parameters["instance"];
+            if (!string.IsNullOrEmpty(instanceId))
+            {
+                this.serviceInstaller.DisplayName = string.Format(ServiceDisplayNameByInstance, instanceId);
+                this.serviceInstaller.ServiceName = string.Format(ServiceServiceNameByInstance, instanceId);
+            }
+            else
+            {
+                this.serviceInstaller.DisplayName = DefaultServiceDisplayName;
+                this.serviceInstaller.ServiceName = DefaultServiceServiceName;
+            }
+            */
+
             this.serviceInstaller.DisplayName = DefaultServiceDisplayName;
             this.serviceInstaller.ServiceName = DefaultServiceServiceName;
+            this.serviceInstaller.Description = "Service for XDagger Miner Pool";
             this.serviceInstaller.StartType = System.ServiceProcess.ServiceStartMode.Automatic;
-            this.serviceInstaller.BeforeInstall += new System.Configuration.Install.InstallEventHandler(this.serviceInstaller_BeforeInstall);
+            //// this.serviceInstaller.BeforeInstall += new System.Configuration.Install.InstallEventHandler(this.serviceInstaller_BeforeInstall);
+            
             // 
             // ProjectInstaller
             // 

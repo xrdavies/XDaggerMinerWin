@@ -39,13 +39,13 @@ namespace XDaggerMinerDaemon.Commands
                 ReportOutput outputResult = new ReportOutput();
                 outputResult.Status = ReportOutput.StatusEnum.Unknown;
 
-                if (!ServiceUtil.CheckServiceExist(ServiceUtil.ServiceName))
+                if (!ServiceUtil.CheckServiceExist(ServiceUtil.ServiceNameBase))
                 {
                     outputResult.Status = ReportOutput.StatusEnum.NotInstalled;
                 }
                 else
                 {
-                    if (!ServiceUtil.IsServiceRunning(ServiceUtil.ServiceName))
+                    if (!ServiceUtil.IsServiceRunning(ServiceUtil.ServiceNameBase))
                     {
                         outputResult.Status = ReportOutput.StatusEnum.Stopped;
                     }

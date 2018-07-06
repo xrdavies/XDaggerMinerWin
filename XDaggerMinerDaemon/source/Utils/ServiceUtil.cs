@@ -11,41 +11,55 @@ namespace XDaggerMinerDaemon.Utils
 {
     public class ServiceUtil
     {
-        public static readonly string ServiceName = @"XDaggerMinerService";
+        public static readonly string ServiceNameBase = @"XDaggerMinerService";
         public static readonly string ServiceBinaryName = @"XDaggerMinerService.exe";
         
-        public static void InstallService(string serviceFullPath)
+        public static string GetServiceName(string instanceId)
         {
-            ManagedInstallerClass.InstallHelper(new string[] { serviceFullPath });
+            return (string.IsNullOrEmpty(instanceId) ? ServiceNameBase : string.Format("{0}_{1}", ServiceNameBase, instanceId));
         }
 
-        public static void UninstallService(string serviceFullPath)
+        public static void InstallService(string serviceFullPath, string instanceId = "")
         {
-            ManagedInstallerClass.InstallHelper(new string[] { "/u", serviceFullPath });
+            if (!string.IsNullOrEmpty(instanceId))
+            {
+                ManagedInstallerClass.InstallHelper(new string[] { "/instance="+instanceId, serviceFullPath });
+            }
+            else
+            {
+                ManagedInstallerClass.InstallHelper(new string[] { serviceFullPath });
+            }
         }
 
-        public static void StartService(string serviceName)
+        public static void UninstallService(string serviceFullPath, string instanceId = "")
         {
-            if (!CheckServiceExist(ServiceName))
+            ManagedInstallerClass.InstallHelper(new string[] { "/u", "/instance=" + instanceId, serviceFullPath });
+        }
+
+        public static void StartService(string instanceId = "")
+        {
+            string serviceName = GetServiceName(instanceId);
+            if (!CheckServiceExist(serviceName))
             {
                 throw new TargetExecutionException(DaemonErrorCode.SERVICE_NOT_INSTALLED, "Service not installed");
             }
 
-            ServiceController service = new ServiceController(ServiceName);
+            ServiceController service = new ServiceController(serviceName);
             TimeSpan timeout = TimeSpan.FromMilliseconds(10000);
 
             service.Start();
             service.WaitForStatus(ServiceControllerStatus.Running, timeout);
         }
 
-        public static void StopService(string serviceName)
+        public static void StopService(string instanceId = "")
         {
-            if (!CheckServiceExist(ServiceName))
+            string serviceName = GetServiceName(instanceId);
+            if (!CheckServiceExist(serviceName))
             {
                 throw new TargetExecutionException(DaemonErrorCode.SERVICE_NOT_INSTALLED, "Service not installed");
             }
 
-            ServiceController service = new ServiceController(ServiceName);
+            ServiceController service = new ServiceController(serviceName);
             TimeSpan timeout = TimeSpan.FromMilliseconds(10000);
 
             service.Stop();
@@ -69,6 +83,23 @@ namespace XDaggerMinerDaemon.Utils
             ServiceController service = services.FirstOrDefault(s => s.ServiceName == serviceName);
 
             return service.Status == ServiceControllerStatus.Running;
+        }
+
+        public static string DetectAvailableInstanceId()
+        {
+            if (!CheckServiceExist(ServiceNameBase))
+            {
+                return string.Empty;
+            }
+
+            int instanceNumber = 1;
+
+            while(CheckServiceExist(GetServiceName(instanceNumber.ToString())))
+            {
+                instanceNumber++;
+            }
+
+            return instanceNumber.ToString();
         }
     }
 }

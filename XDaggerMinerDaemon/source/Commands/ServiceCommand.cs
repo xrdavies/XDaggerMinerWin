@@ -24,6 +24,8 @@ namespace XDaggerMinerDaemon.Commands
             return "--Service";
         }
 
+        private string serviceInstanceId = null; 
+
         private static string ServiceBinaryFullPath
         {
             get
@@ -47,6 +49,8 @@ namespace XDaggerMinerDaemon.Commands
 
         public override CommandResult Execute(string parameter)
         {
+            serviceInstanceId = MinerConfig.GetInstance().InstanceId;
+
             string operationName = parameter;
             switch (operationName)
             {
@@ -63,7 +67,7 @@ namespace XDaggerMinerDaemon.Commands
         {
             try
             {
-                ServiceUtil.InstallService(ServiceBinaryFullPath);
+                ServiceUtil.InstallService(ServiceBinaryFullPath, serviceInstanceId);
                 return CommandResult.OKResult();
             }
             catch (TargetExecutionException ex)
@@ -80,7 +84,7 @@ namespace XDaggerMinerDaemon.Commands
         {
             try
             {
-                ServiceUtil.UninstallService(ServiceBinaryFullPath);
+                ServiceUtil.UninstallService(ServiceBinaryFullPath, serviceInstanceId);
                 return CommandResult.OKResult();
             }
             catch (TargetExecutionException ex)
@@ -97,7 +101,7 @@ namespace XDaggerMinerDaemon.Commands
         {
             try
             {
-                ServiceUtil.StartService(ServiceUtil.ServiceName);
+                ServiceUtil.StartService(serviceInstanceId);
 
                 return CommandResult.OKResult();
             }
@@ -119,7 +123,7 @@ namespace XDaggerMinerDaemon.Commands
         {
             try
             {
-                ServiceUtil.StopService(ServiceUtil.ServiceName);
+                ServiceUtil.StopService(serviceInstanceId);
                 return CommandResult.OKResult();
             }
             catch (Service.TimeoutException ex)

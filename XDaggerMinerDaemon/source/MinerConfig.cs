@@ -11,10 +11,22 @@ namespace XDaggerMinerDaemon
     public class MinerConfig
     {
         private static readonly string defaultConfigFileName = @"miner-config.json";
-    
+
+        private static MinerConfig instance = null;
+
         public MinerConfig()
         {
 
+        }
+
+        public static MinerConfig GetInstance()
+        {
+            if (instance == null)
+            {
+                instance = ReadFromFile();
+            }
+
+            return instance;
         }
 
         /*
@@ -37,6 +49,12 @@ namespace XDaggerMinerDaemon
 
         [JsonProperty(PropertyName = "version")]
         public string Version
+        {
+            get; set;
+        }
+
+        [JsonProperty(PropertyName = "instance")]
+        public string InstanceId
         {
             get; set;
         }

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using XDaggerMiner.Common;
+using XDaggerMinerDaemon.Utils;
 using XDaggerMinerRuntimeCLI;
 
 namespace XDaggerMinerDaemon.Commands
@@ -37,11 +38,11 @@ namespace XDaggerMinerDaemon.Commands
         public override CommandResult Execute(string parameter)
         {
             // Update the configuration
-            ConfigureParameter configure = null;
+            ConfigureParameter configParameters = null;
 
             try
             {
-                configure = JsonConvert.DeserializeObject<ConfigureParameter>(parameter);
+                configParameters = JsonConvert.DeserializeObject<ConfigureParameter>(parameter);
             }
             catch(FormatException)
             {
@@ -50,7 +51,7 @@ namespace XDaggerMinerDaemon.Commands
 
             MinerConfig config = MinerConfig.ReadFromFile();
 
-            if (!string.IsNullOrEmpty(configure.DeviceId))
+            if (!string.IsNullOrEmpty(configParameters.DeviceId))
             {
                 MinerManager minerManager = new MinerManager();
                 ConsoleLogger logger = new ConsoleLogger();
@@ -60,7 +61,7 @@ namespace XDaggerMinerDaemon.Commands
                 bool deviceFound = false;
                 foreach(MinerDevice device in deviceList)
                 {
-                    if (device.IsMatchId(configure.DeviceId))
+                    if (device.IsMatchId(configParameters.DeviceId))
                     {
                         config.Device = new MinerConfigDevice(device.GetDeviceId(), device.GetDisplayName(), device.GetDeviceVersion(), device.GetDriverVersion());
                         deviceFound = true;
@@ -70,24 +71,39 @@ namespace XDaggerMinerDaemon.Commands
                 
                 if (!deviceFound)
                 {
-                    throw new TargetExecutionException(DaemonErrorCode.CONFIG_DEVICE_NOT_FOUND, string.Format("Did not find the device matches DeviceId=[{0}]", configure.DeviceId));
+                    throw new TargetExecutionException(DaemonErrorCode.CONFIG_DEVICE_NOT_FOUND, string.Format("Did not find the device matches DeviceId=[{0}]", configParameters.DeviceId));
                 }
             }
 
-            if (!string.IsNullOrEmpty(configure.Wallet))
+            if (!string.IsNullOrEmpty(configParameters.Wallet))
             {
                 // TODO: Should validate the Wallet address first
                 if (false)
                 {
-                    throw new TargetExecutionException(DaemonErrorCode.CONFIG_WALLET_FORMET_ERROR, string.Format("Wallet format is not correct. Wallet=[{0}]", configure.Wallet));
+                    throw new TargetExecutionException(DaemonErrorCode.CONFIG_WALLET_FORMET_ERROR, string.Format("Wallet format is not correct. Wallet=[{0}]", configParameters.Wallet));
                 }
 
                 if (false)
                 {
-                    throw new TargetExecutionException(DaemonErrorCode.CONFIG_WALLET_NOT_FOUND, string.Format("Wallet cannot be found. Wallet=[{0}]", configure.Wallet));
+                    throw new TargetExecutionException(DaemonErrorCode.CONFIG_WALLET_NOT_FOUND, string.Format("Wallet cannot be found. Wallet=[{0}]", configParameters.Wallet));
                 }
 
-                config.WalletAddress = configure.Wallet;
+                config.WalletAddress = configParameters.Wallet;
+            }
+
+            if (!string.IsNullOrEmpty(configParameters.InstanceId) && configParameters.AutoDecideInstanceId)
+            {
+                throw new TargetExecutionException(DaemonErrorCode.COMMAND_PARAM_ERROR, "Cannot specify InstanceId while AutoDecideInstanceId is used.");
+            }
+
+            if (!string.IsNullOrEmpty(configParameters.InstanceId))
+            {
+                config.InstanceId = configParameters.InstanceId;
+            }
+
+            if (configParameters.AutoDecideInstanceId)
+            {
+                config.InstanceId = ServiceUtil.DetectAvailableInstanceId();
             }
 
             try
@@ -111,6 +127,10 @@ namespace XDaggerMinerDaemon.Commands
         /// The Wallet address of the customer
         /// </summary>
         public string Wallet;
+
+        public string InstanceId;
+
+        public bool AutoDecideInstanceId = false;
     }
 
 }
