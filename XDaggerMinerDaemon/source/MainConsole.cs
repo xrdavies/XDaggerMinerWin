@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using XDaggerMiner.Common;
 using XDaggerMinerDaemon.Commands;
 using XDaggerMinerRuntimeCLI;
 
@@ -28,55 +29,60 @@ namespace XDaggerMinerDaemon
             minerManager = new MinerManager();
             logger = new ConsoleLogger();
             minerManager.SetLogger(logger);
+        }
 
+        public CommandResult Execute()
+        {
             try
             {
                 minerConfig = MinerConfig.ReadFromFile();
-
             }
-            catch(Exception ex)
+            catch (TargetExecutionException ex)
             {
-                logger.WriteLog(3, 0, "Read config file failed: " + ex.ToString());
+                logger.WriteLog(3, 0, "Read config file failed: " + ex.Message);
+                return CommandResult.ErrorResult(ex);
             }
-        }
 
-        public void Execute()
-        {
             if (minerConfig == null || minerManager == null)
             {
                 logger.WriteLog(3, 0, "Cannot Execute due to previous initialization failure.");
+                return CommandResult.ErrorResult(DaemonErrorCode.INITIALIZE_FAILED, "Cannot Execute due to previous initialization failure.");
             }
 
             List<CommandInstance> commands = ConsoleCommand.ParseCommands(rawArguments);
             if (commands.Count == 0)
             {
                 // Do nothing is there is no command
-                return;
+                return CommandResult.ErrorResult(DaemonErrorCode.COMMAND_MISSING, "missing command here.");
             }
 
-            CommandResult result = null;
             if (commands.Count > 1)
             {
                 // Not Supported
-                result = CommandResult.ErrorResult(99318, "Curent not supporting multiple commands.");
+                return CommandResult.ErrorResult(DaemonErrorCode.COMMAND_TOO_MANY, "Curent not supporting multiple commands.");
             }
-            else
+
+            
+            // Disable the Console output during the command call
+            TextWriter defaultOutput = Console.Out;
+
+            try
             {
-                // Disable the Console output during the command call
-                TextWriter defaultOutput = Console.Out;
-
-                try
-                {
-                    Console.SetOut(TextWriter.Null);
-                    result = commands[0].Execute();
-                }
-                finally
-                {
-                    Console.SetOut(defaultOutput);
-                }
+                Console.SetOut(TextWriter.Null);
+                return commands[0].Execute();
             }
-
-            Console.WriteLine(result);
+            catch(TargetExecutionException ex)
+            {
+                return CommandResult.ErrorResult(ex);
+            }
+            catch(Exception ex)
+            {
+                return CommandResult.ErrorResult(DaemonErrorCode.UNKNOWN_ERROR, ex.Message);
+            }
+            finally
+            {
+                Console.SetOut(defaultOutput);
+            }
         }
     }
 }

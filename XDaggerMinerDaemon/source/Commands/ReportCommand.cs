@@ -5,6 +5,7 @@ using System.IO.Pipes;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using XDaggerMiner.Common;
 using XDaggerMinerDaemon.Commands.Outputs;
 using XDaggerMinerDaemon.Utils;
 
@@ -57,9 +58,13 @@ namespace XDaggerMinerDaemon.Commands
 
                 return CommandResult.CreateResult(outputResult);
             }
+            catch(TargetExecutionException ex)
+            {
+                throw ex;
+            }
             catch (Exception ex)
             {
-                return CommandResult.ErrorResult(1001, ex.Message);
+                throw new TargetExecutionException(DaemonErrorCode.UNKNOWN_ERROR, ex);
             }
         }
 
@@ -111,7 +116,7 @@ namespace XDaggerMinerDaemon.Commands
             catch(Exception ex)
             {
                 //TODO: Handle exceptions
-                throw ex;
+                throw new TargetExecutionException(DaemonErrorCode.REPORT_NAMEDPIPE_ERROR, ex);
             }
         }
 

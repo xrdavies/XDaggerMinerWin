@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using XDaggerMiner.Common;
 using XDaggerMinerRuntimeCLI;
 
 namespace XDaggerMinerDaemon.Commands
@@ -24,7 +25,7 @@ namespace XDaggerMinerDaemon.Commands
         {
             if (arguments.Length <= nextIndex)
             {
-                throw new ArgumentException("Argument Not Correct for Configure Command.");
+                throw new TargetExecutionException(DaemonErrorCode.COMMAND_PARAM_ERROR, "Argument Not Correct for Configure Command.");
             }
 
             CommandInstance instance = new CommandInstance(this);
@@ -42,9 +43,9 @@ namespace XDaggerMinerDaemon.Commands
             {
                 configure = JsonConvert.DeserializeObject<ConfigureParameter>(parameter);
             }
-            catch(FormatException ex)
+            catch(FormatException)
             {
-                throw new ArgumentException("The format of the Configuration content is not valid Json.", ex.ToString());
+                throw new TargetExecutionException(DaemonErrorCode.COMMAND_PARAM_ERROR, "The format of the Configuration content is not valid Json.");
             }
 
             MinerConfig config = MinerConfig.ReadFromFile();
@@ -69,22 +70,37 @@ namespace XDaggerMinerDaemon.Commands
                 
                 if (!deviceFound)
                 {
-                    throw new ArgumentException(string.Format("Did not find the device matches DeviceId=[{0}]", configure.DeviceId));
+                    throw new TargetExecutionException(DaemonErrorCode.CONFIG_DEVICE_NOT_FOUND, string.Format("Did not find the device matches DeviceId=[{0}]", configure.DeviceId));
                 }
             }
 
             if (!string.IsNullOrEmpty(configure.Wallet))
             {
                 // TODO: Should validate the Wallet address first
+                if (false)
+                {
+                    throw new TargetExecutionException(DaemonErrorCode.CONFIG_WALLET_FORMET_ERROR, string.Format("Wallet format is not correct. Wallet=[{0}]", configure.Wallet));
+                }
+
+                if (false)
+                {
+                    throw new TargetExecutionException(DaemonErrorCode.CONFIG_WALLET_NOT_FOUND, string.Format("Wallet cannot be found. Wallet=[{0}]", configure.Wallet));
+                }
 
                 config.WalletAddress = configure.Wallet;
             }
-            
-            config.SaveToFile();
 
-            return CommandResult.OKResult();
+            try
+            {
+                config.SaveToFile();
+
+                return CommandResult.OKResult();
+            }
+            catch (Exception ex)
+            {
+                throw new TargetExecutionException(DaemonErrorCode.UNKNOWN_ERROR, ex.Message);
+            }
         }
-        
     }
 
     public class ConfigureParameter

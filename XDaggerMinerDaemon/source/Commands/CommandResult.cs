@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using XDaggerMiner.Common;
 
 namespace XDaggerMinerDaemon.Commands
 {
@@ -22,6 +23,16 @@ namespace XDaggerMinerDaemon.Commands
         public static CommandResult ErrorResult(int code, string errorMessage)
         {
             return new CommandResult(code, errorMessage);
+        }
+
+        public static CommandResult ErrorResult(DaemonErrorCode code, string errorMessage)
+        {
+            return new CommandResult(code.GetHashCode(), errorMessage);
+        }
+
+        public static CommandResult ErrorResult(TargetExecutionException executionException)
+        {
+            return new CommandResult(executionException.ErrorCode, executionException.Message);
         }
 
         public CommandResult()

@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using XDaggerMinerRuntimeCLI;
 using XDaggerMinerDaemon.Commands.Outputs;
+using XDaggerMiner.Common;
 
 namespace XDaggerMinerDaemon.Commands
 {
@@ -35,15 +36,22 @@ namespace XDaggerMinerDaemon.Commands
             ConsoleLogger logger = new ConsoleLogger();
             minerManager.SetLogger(logger);
 
-            List<MinerDevice> deviceList = minerManager.GetAllMinerDevices();
-            List<MinerDeviceOutput> deviceOutputList = new List<MinerDeviceOutput>();
-            foreach (MinerDevice device in deviceList)
+            try
             {
-                MinerDeviceOutput outp = new MinerDeviceOutput(device);
-                deviceOutputList.Add(outp);
+                List<MinerDevice> deviceList = minerManager.GetAllMinerDevices();
+                List<MinerDeviceOutput> deviceOutputList = new List<MinerDeviceOutput>();
+                foreach (MinerDevice device in deviceList)
+                {
+                    MinerDeviceOutput outp = new MinerDeviceOutput(device);
+                    deviceOutputList.Add(outp);
+                }
+
+                return CommandResult.CreateResult(deviceOutputList);
             }
-     
-            return CommandResult.CreateResult(deviceOutputList);
+            catch(Exception ex)
+            {
+                throw new TargetExecutionException(DaemonErrorCode.UNKNOWN_ERROR, ex);
+            }
         }
     }
 }

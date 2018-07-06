@@ -5,6 +5,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using XDaggerMinerDaemon;
+using XDaggerMinerDaemon.Commands;
 using XDaggerMinerRuntimeCLI;
 
 namespace XDaggerMinerDaemon
@@ -15,9 +16,9 @@ namespace XDaggerMinerDaemon
         static void Main(string[] args)
         {
             MainConsole console = new MainConsole(args);
-            console.Execute();
+            CommandResult result = console.Execute();
 
-            //// Console.ReadKey();
+            Console.WriteLine(result?.ToString());
         }
     };
 

@@ -97,6 +97,7 @@
     <Compile Include="source\Commands\ReportCommand.cs" />
     <Compile Include="source\Commands\ServiceCommand.cs" />
     <Compile Include="source\Common\DaemonCode.cs" />
+    <Compile Include="source\Common\TargetExecutionException.cs" />
     <Compile Include="source\ConsoleLogger.cs" />
     <Compile Include="source\MainConsole.cs" />
     <Compile Include="source\MinerConfig.cs" />

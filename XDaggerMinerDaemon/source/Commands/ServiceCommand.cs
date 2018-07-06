@@ -8,6 +8,7 @@ using Service = System.ServiceProcess;
 using System.Text;
 using System.Threading.Tasks;
 using XDaggerMinerDaemon.Utils;
+using XDaggerMiner.Common;
 
 namespace XDaggerMinerDaemon.Commands
 {
@@ -35,7 +36,7 @@ namespace XDaggerMinerDaemon.Commands
         {
             if (arguments.Length <= nextIndex)
             {
-                throw new ArgumentException("Argument Not Correct for Service Command.");
+                throw new TargetExecutionException(DaemonErrorCode.COMMAND_PARAM_ERROR, "Argument Not Correct for Service Command.");
             }
 
             CommandInstance instance = new CommandInstance(this);
@@ -54,7 +55,7 @@ namespace XDaggerMinerDaemon.Commands
                 case "install": return Install();
                 case "uninstall": return Uninstall();
                 default:
-                    throw new ArgumentException("Unknown operation type for service: " + operationName);
+                    throw new TargetExecutionException(DaemonErrorCode.COMMAND_PARAM_ERROR, "Unknown operation type for service: " + operationName);
             }
         }
 
@@ -65,9 +66,13 @@ namespace XDaggerMinerDaemon.Commands
                 ServiceUtil.InstallService(ServiceBinaryFullPath);
                 return CommandResult.OKResult();
             }
+            catch (TargetExecutionException ex)
+            {
+                throw ex;
+            }
             catch (Exception ex)
             {
-                return CommandResult.ErrorResult(101, ex.ToString());
+                throw new TargetExecutionException(DaemonErrorCode.UNKNOWN_ERROR, ex);
             }
         }
 
@@ -78,9 +83,13 @@ namespace XDaggerMinerDaemon.Commands
                 ServiceUtil.UninstallService(ServiceBinaryFullPath);
                 return CommandResult.OKResult();
             }
+            catch (TargetExecutionException ex)
+            {
+                throw ex;
+            }
             catch (Exception ex)
             {
-                return CommandResult.ErrorResult(101, ex.ToString());
+                throw new TargetExecutionException(DaemonErrorCode.UNKNOWN_ERROR, ex);
             }
         }
 
@@ -92,13 +101,17 @@ namespace XDaggerMinerDaemon.Commands
 
                 return CommandResult.OKResult();
             }
-            catch(Service.TimeoutException tex)
+            catch(Service.TimeoutException ex)
             {
-                return CommandResult.ErrorResult(101, tex.ToString());
+                throw new TargetExecutionException(DaemonErrorCode.COMMAND_TIME_OUT, ex);
+            }
+            catch (TargetExecutionException ex)
+            {
+                throw ex;
             }
             catch (Exception ex)
             {
-                return CommandResult.ErrorResult(101, ex.ToString());
+                throw new TargetExecutionException(DaemonErrorCode.UNKNOWN_ERROR, ex);
             }
         }
 
@@ -107,18 +120,20 @@ namespace XDaggerMinerDaemon.Commands
             try
             {
                 ServiceUtil.StopService(ServiceUtil.ServiceName);
-
                 return CommandResult.OKResult();
             }
-            catch (Service.TimeoutException tex)
+            catch (Service.TimeoutException ex)
             {
-                return CommandResult.ErrorResult(101, tex.ToString());
+                throw new TargetExecutionException(DaemonErrorCode.COMMAND_TIME_OUT, ex);
+            }
+            catch (TargetExecutionException ex)
+            {
+                throw ex;
             }
             catch (Exception ex)
             {
-                return CommandResult.ErrorResult(101, ex.ToString());
+                throw new TargetExecutionException(DaemonErrorCode.UNKNOWN_ERROR, ex);
             }
         }
-
     }
 }

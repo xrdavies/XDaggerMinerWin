@@ -5,6 +5,7 @@ using System.Linq;
 using System.ServiceProcess;
 using System.Text;
 using System.Threading.Tasks;
+using XDaggerMiner.Common;
 
 namespace XDaggerMinerDaemon.Utils
 {
@@ -27,7 +28,7 @@ namespace XDaggerMinerDaemon.Utils
         {
             if (!CheckServiceExist(ServiceName))
             {
-                throw new ArgumentException("Service not installed");
+                throw new TargetExecutionException(DaemonErrorCode.SERVICE_NOT_INSTALLED, "Service not installed");
             }
 
             ServiceController service = new ServiceController(ServiceName);
@@ -41,7 +42,7 @@ namespace XDaggerMinerDaemon.Utils
         {
             if (!CheckServiceExist(ServiceName))
             {
-                throw new ArgumentException("Service not installed");
+                throw new TargetExecutionException(DaemonErrorCode.SERVICE_NOT_INSTALLED, "Service not installed");
             }
 
             ServiceController service = new ServiceController(ServiceName);
