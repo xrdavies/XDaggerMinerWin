@@ -65,7 +65,7 @@ namespace XDaggerMinerService
         {
             // Set up a timer to trigger every minute.  
             System.Timers.Timer timer = new System.Timers.Timer();
-            timer.Interval = 3000;
+            timer.Interval = 10000;
             timer.Elapsed += new System.Timers.ElapsedEventHandler(this.OnTimerWork);
             timer.Start();
 

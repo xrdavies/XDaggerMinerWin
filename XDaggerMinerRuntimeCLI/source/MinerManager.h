@@ -48,11 +48,9 @@ namespace XDaggerMinerRuntimeCLI {
 		//
 		String ^ QueryStatistics(int queryId);
 
-		
 		void WriteTestMessage();
 
 		void WriteLog(int level, int eventId, const char* message);
-
 	private:
 		// List<String^>^ dinosaurs = gcnew List<String^>();
 

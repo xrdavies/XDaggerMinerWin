@@ -41,8 +41,6 @@ namespace XDag
 	class Farm;
 }
 
-static LoggerCallbackC cb;
-
 namespace XDaggerMinerRuntime
 {
 	//
