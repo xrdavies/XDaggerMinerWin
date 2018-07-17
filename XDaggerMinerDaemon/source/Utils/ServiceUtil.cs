@@ -33,7 +33,14 @@ namespace XDaggerMinerDaemon.Utils
 
         public static void UninstallService(string serviceFullPath, string instanceId = "")
         {
-            ManagedInstallerClass.InstallHelper(new string[] { "/u", "/instance=" + instanceId, serviceFullPath });
+            if (!string.IsNullOrEmpty(instanceId))
+            {
+                ManagedInstallerClass.InstallHelper(new string[] { "/u", "/instance=" + instanceId, serviceFullPath });
+            }
+            else
+            {
+                ManagedInstallerClass.InstallHelper(new string[] { "/u", serviceFullPath });
+            }
         }
 
         public static void StartService(string instanceId = "")

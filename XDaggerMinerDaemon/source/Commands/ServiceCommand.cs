@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using XDaggerMinerDaemon.Utils;
 using XDaggerMiner.Common;
+using XDaggerMinerDaemon.Commands.Outputs;
 
 namespace XDaggerMinerDaemon.Commands
 {
@@ -58,6 +59,7 @@ namespace XDaggerMinerDaemon.Commands
                 case "stop": return Stop();
                 case "install": return Install();
                 case "uninstall": return Uninstall();
+                case "detect": return Detect();
                 default:
                     throw new TargetExecutionException(DaemonErrorCode.COMMAND_PARAM_ERROR, "Unknown operation type for service: " + operationName);
             }
@@ -86,6 +88,28 @@ namespace XDaggerMinerDaemon.Commands
             {
                 ServiceUtil.UninstallService(ServiceBinaryFullPath, serviceInstanceId);
                 return CommandResult.OKResult();
+            }
+            catch (TargetExecutionException ex)
+            {
+                throw ex;
+            }
+            catch (Exception ex)
+            {
+                throw new TargetExecutionException(DaemonErrorCode.UNKNOWN_ERROR, ex);
+            }
+        }
+
+        private CommandResult Detect()
+        {
+            try
+            {
+                string newInstanceId = ServiceUtil.DetectAvailableInstanceId();
+
+                return CommandResult.CreateResult(MessageOutput.Create(newInstanceId));
+            }
+            catch (Service.TimeoutException ex)
+            {
+                throw new TargetExecutionException(DaemonErrorCode.COMMAND_TIME_OUT, ex);
             }
             catch (TargetExecutionException ex)
             {

@@ -36,9 +36,7 @@ namespace XDaggerMinerService
         private MinerManager minerManager;
 
         private MinerConfig config;
-
-        private string instanceId = null;
-
+        
         private Task namedPipeServerTask = null;
 
         public MinerService()
@@ -126,7 +124,7 @@ namespace XDaggerMinerService
         {
             try
             {
-                using (var server = new NamedPipeServerStream(string.Format(NamedPipeServerNameTemplate, instanceId)))
+                using (var server = new NamedPipeServerStream(string.Format(NamedPipeServerNameTemplate, config.InstanceId)))
                 {
                     using (StreamReader reader = new StreamReader(server))
                     {

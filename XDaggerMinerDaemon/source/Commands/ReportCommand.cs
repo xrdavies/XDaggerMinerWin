@@ -39,11 +39,13 @@ namespace XDaggerMinerDaemon.Commands
                 ReportOutput outputResult = new ReportOutput();
                 outputResult.Status = ReportOutput.StatusEnum.Unknown;
 
-                if (!ServiceUtil.CheckServiceExist(ServiceUtil.ServiceNameBase))
+                string instanceId = MinerConfig.GetInstance().InstanceId;
+
+                if (!ServiceUtil.CheckServiceExist(ServiceUtil.GetServiceName(instanceId)))
                 {
                     outputResult.Status = ReportOutput.StatusEnum.NotInstalled;
                 }
-                else if (!ServiceUtil.IsServiceRunning(ServiceUtil.ServiceNameBase))
+                else if (!ServiceUtil.IsServiceRunning(ServiceUtil.GetServiceName(instanceId)))
                 {
                     outputResult.Status = ReportOutput.StatusEnum.Stopped;
                 }
@@ -74,7 +76,9 @@ namespace XDaggerMinerDaemon.Commands
         /// <returns></returns>
         private void QueryServiceStatusByNamedPipe(ReportOutput outputResult)
         {
-            string namedPipeName = string.Format(NamedPipeServerNameTemplate, string.Empty);
+            string instanceId = MinerConfig.GetInstance().InstanceId;
+
+            string namedPipeName = string.Format(NamedPipeServerNameTemplate, instanceId);
             outputResult.HashRate = -1;
 
             string pipelineOutput = string.Empty;
