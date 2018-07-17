@@ -93,9 +93,11 @@
     <Compile Include="source\Commands\ConfigureCommand.cs" />
     <Compile Include="source\Commands\ConsoleCommand.cs" />
     <Compile Include="source\Commands\ListDevicesCommand.cs" />
+    <Compile Include="source\Commands\Outputs\MessageOutput.cs" />
     <Compile Include="source\Commands\Outputs\ReportOutput.cs" />
     <Compile Include="source\Commands\ReportCommand.cs" />
     <Compile Include="source\Commands\ServiceCommand.cs" />
+    <Compile Include="source\Commands\TestingCommands.cs" />
     <Compile Include="source\Common\DaemonCode.cs" />
     <Compile Include="source\Common\TargetExecutionException.cs" />
     <Compile Include="source\ConsoleLogger.cs" />
@@ -106,7 +108,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-    <None Include="log4net.config">
+    <None Include="log4net-daemon.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="miner-config.json">

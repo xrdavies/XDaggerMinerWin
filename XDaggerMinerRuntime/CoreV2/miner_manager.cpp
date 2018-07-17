@@ -19,22 +19,22 @@ using namespace XDag;
 using namespace XDaggerMinerRuntime;
 
 
-
 MinerManager::MinerManager()
 {
-	this->_logCallback = nullptr;
+	this->_loggerCallback = nullptr;
 }
 
 MinerManager::MinerManager(bool isFakeRun)
 {
-	this->_logCallback = nullptr;
+	this->_loggerCallback = nullptr;
 	this->_isFakeRun = isFakeRun;
 }
 
-void MinerManager::setLogCallback(LoggerCallback loggerFunction)
+void MinerManager::setLoggerCallback(LoggerCallbackC loggerFunction)
 {
-	this->_logCallback = loggerFunction;
+	this->_loggerCallback = loggerFunction;
 }
+
 
 std::vector< MinerDevice* > MinerManager::getAllMinerDevices()
 {
@@ -45,7 +45,6 @@ std::vector< MinerDevice* > MinerManager::getAllMinerDevices()
 	if (platformList.empty())
 	{
 		logError(0, "No Platform founded on this device.");
-		//// XCL_LOG("No OpenCL platforms found.");
 		return resultList;
 	}
 
@@ -123,112 +122,199 @@ void MinerManager::doRealMiningWork(std::string& poolAddress, std::string& walle
 	}
 
 	XTaskProcessor taskProcessor;
-	XPool pool(walletAddress, poolAddress, &taskProcessor);
 
-	Farm farm(&taskProcessor);
+	logTrace(0, "Initializing XPool.");
+	_xPool = new XPool(walletAddress, poolAddress, &taskProcessor);
+	
+	logTrace(0, "Initializing Farm.");
+	_farm = new XDag::Farm(&taskProcessor);
+	//// Farm farm(&taskProcessor);
 
-	if (!pool.Initialize())
+	if (!_xPool->Initialize())
 	{
 		logError(0, "Pool initialization error");
 		return;
 	}
-	if (!pool.Connect())
+	if (!_xPool->Connect())
 	{
 		logError(0, "Cannot connect to pool: " + poolAddress);
 		return;
 	}
 	//wait a bit
-	logInformation(0, "Wait for a bit...");
+	logTrace(0, "Wait for a bit...");
 	this_thread::sleep_for(chrono::milliseconds(200));
 
-	logInformation(0, "Create Farm and Add Seeker...");
-	farm.AddSeeker(Farm::SeekerDescriptor{ &CLMiner::Instances, [](unsigned index, XTaskProcessor* taskProcessor) { return new CLMiner(index, taskProcessor); } });
+	logTrace(0, "Create Farm and Add Seeker...");
+	_farm->AddSeeker(XDag::Farm::SeekerDescriptor{ &CLMiner::Instances, [](unsigned index, XTaskProcessor* taskProcessor) { return new CLMiner(index, taskProcessor); } });
 
-	if (!farm.Start())
+	if (!_farm->Start())
 	{
 		logError(0, "Failed to start mining");
 		return;
 	}
 
-	logInformation(0, "Farm Started.");
+	logTrace(0, "Farm Started.");
 
 	uint32_t iteration = 0;
-	bool isConnected = true;
+	bool isConnected = false;
 	_isRunning = true;
 
 	while (_running)
 	{
 		if (!isConnected)
 		{
-			isConnected = pool.Connect();
+			isConnected = _xPool->Connect();
 			if (isConnected)
 			{
-				if (!farm.Start())
+				logInformation(0, "Pool Connected. Starting Farm now.");
+
+				if (!_farm->Start())
 				{
-					logError(0, "Failed to restart mining");
+					logInformation(0, "Failed to restart mining");
 					_isRunning = false;
 					return;
 				}
+
+				logInformation(0, "Farm Started.");
 			}
 			else
 			{
-				logError(0, "Cannot connect to pool. Reconnection...");
+				logInformation(0, "Cannot connect to pool. Reconnection...");
 				this_thread::sleep_for(chrono::milliseconds(5000));
 				continue;
 			}
 		}
-
-		if (!pool.Interract())
+		else
 		{
-			pool.Disconnect();
-			farm.Stop();
+			logTrace(0, "Pool Connected.");
+		}
+
+		if (!_xPool->Interract())
+		{
+			logInformation(0, "Failed to get data from pool. Stopping this iteration...");
+
+			_xPool->Disconnect();
+			_farm->Stop();
 			isConnected = false;
 			_isRunning = false;
-			logError(0, "Failed to get data from pool. Stop this iteration...");
+
+			logInformation(0, "Stoped the iteration.");
+
 			return;
 		}
 
 		if (iteration > 0 && (iteration & 1) == 0)
 		{
-			auto mp = farm.MiningProgress();
+			auto mp = _farm->MiningProgress();
 			//// minelog << mp;
 		}
+
+		logTrace(0, "Continue for next running iteration...");
 
 		this_thread::sleep_for(chrono::milliseconds(_poolRecheckPeriod));
 		++iteration;
 	}
 
 	_isRunning = false;
-	farm.Stop();
+	_farm->Stop();
+
+	logInformation(0, "Farm Stopped.");
 }
 
 
 void MinerManager::doFakeMiningWork()
 {
-	logInformation(0, "Fake Farm Started.");
+	logTrace(0, "Fake Farm Started.");
 
 	int iteration = 0;
 	while (_running)
 	{
-		logInformation(0, "Fake Running...");
+		logTrace(0, "Fake Running...");
 
 		this_thread::sleep_for(chrono::milliseconds(_poolRecheckPeriod));
 		++iteration;
 	}
 }
 
+string MinerManager::queryStatistics(int queryId)
+{
+	switch (queryId)
+	{
+	case 1:
+		return retrieveRunningStatus();
+	case 2:
+		return retrieveHashrate();
+	default:
+		return nullptr;
+	}
+
+	return nullptr;
+}
+
+std::string MinerManager::retrieveRunningStatus()
+{
+	if (_xPool == nullptr)
+	{
+		return "stopped";
+	}
+
+	if (!_xPool->Interract())
+	{
+		return "disconnected";
+	}
+
+	if (!_isRunning)
+	{
+		return "connected";
+	}
+
+	if (_farm == nullptr || !_farm->IsMining())
+	{
+		return "idle";
+	}
+
+	return "mining";
+}
+
+std::string MinerManager::retrieveHashrate()
+{
+	if (_farm == nullptr || !_farm->IsMining())
+	{
+		return "0";
+	}
+
+	WorkingProgress progress = _farm->MiningProgress();
+	
+	return std::to_string(progress.Rate());
+}
+
 void MinerManager::logInformation(int eventId, std::string message)
 {
-	this->_logCallback(0, eventId, message);
+	if (this->_loggerCallback == nullptr)
+	{
+		throw new exception("logInformation : logger callback is null");
+	}
+
+	this->_loggerCallback(LoggerLevel_Information, eventId, message.c_str());
+}
+
+void MinerManager::logTrace(int eventId, std::string message)
+{
+	if (this->_loggerCallback == nullptr)
+	{
+		throw new exception("logInformation : logger callback is null");
+	}
+
+	this->_loggerCallback(LoggerLevel_Trace, eventId, message.c_str());
 }
 
 void MinerManager::logWarning(int eventId, std::string message)
 {
-	this->_logCallback(1, eventId, message);
+	this->_loggerCallback(LoggerLevel_Warning, eventId, message.c_str());
 }
 
 void MinerManager::logError(int eventId, std::string message)
 {
-	this->_logCallback(2, eventId, message);
+	this->_loggerCallback(LoggerLevel_Error, eventId, message.c_str());
 }
 

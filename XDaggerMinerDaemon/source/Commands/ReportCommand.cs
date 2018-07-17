@@ -43,17 +43,14 @@ namespace XDaggerMinerDaemon.Commands
                 {
                     outputResult.Status = ReportOutput.StatusEnum.NotInstalled;
                 }
+                else if (!ServiceUtil.IsServiceRunning(ServiceUtil.ServiceNameBase))
+                {
+                    outputResult.Status = ReportOutput.StatusEnum.Stopped;
+                }
                 else
                 {
-                    if (!ServiceUtil.IsServiceRunning(ServiceUtil.ServiceNameBase))
-                    {
-                        outputResult.Status = ReportOutput.StatusEnum.Stopped;
-                    }
-                    else
-                    {
-                        // Retrieve the miner status from NamedPipe
-                        QueryServiceStatusByNamedPipe(outputResult);
-                    }
+                    // Retrieve the miner status from NamedPipe
+                    QueryServiceStatusByNamedPipe(outputResult);
                 }
 
                 return CommandResult.CreateResult(outputResult);
@@ -78,7 +75,7 @@ namespace XDaggerMinerDaemon.Commands
         private void QueryServiceStatusByNamedPipe(ReportOutput outputResult)
         {
             string namedPipeName = string.Format(NamedPipeServerNameTemplate, string.Empty);
-            outputResult.HashRate = 0;
+            outputResult.HashRate = -1;
 
             string pipelineOutput = string.Empty;
             try
@@ -93,28 +90,34 @@ namespace XDaggerMinerDaemon.Commands
                         {
                             string status = ReadFromNamedPipe(reader, writer, "status");
                             string hashRateStr = ReadFromNamedPipe(reader, writer, "hashrate");
-                            switch(status)
+                            
+                            switch (status)
                             {
-                                case "running":
+                                case "mining":
                                     outputResult.Status = ReportOutput.StatusEnum.Mining;
+                                    outputResult.HashRate = Double.Parse(hashRateStr);
                                     break;
+                                case "idle":
                                 case "connected":
                                     outputResult.Status = ReportOutput.StatusEnum.Connected;
                                     break;
                                 case "disconnected":
                                     outputResult.Status = ReportOutput.StatusEnum.Disconnected;
                                     break;
-                                default:
+                                case "stopped":
+                                    outputResult.Status = ReportOutput.StatusEnum.Stopped;
                                     break;
+                                default:
+                                    throw new TargetExecutionException(DaemonErrorCode.REPORT_NAMEDPIPE_ERROR, "status=" + status);
                             }
-
-                            outputResult.HashRate = Double.Parse(hashRateStr);
                         }
                     }
                 }
             }
             catch(Exception ex)
             {
+                //// outputResult.Status = ReportOutput.StatusEnum.NotInstalled;
+
                 //TODO: Handle exceptions
                 throw new TargetExecutionException(DaemonErrorCode.REPORT_NAMEDPIPE_ERROR, ex);
             }

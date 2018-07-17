@@ -9,17 +9,14 @@ using namespace System::Runtime::InteropServices;
 using namespace XDaggerMinerRuntimeCLI;
 
 
-MinerManager::MinerManager()
+MinerManager::MinerManager() : MinerManager(false)
 {
-	this->_impl = new XDaggerMinerRuntime::MinerManager();
-	
-	// Set Logger Callback
-	LoggerCallback^ writLogFunc = gcnew LoggerCallback(this, &MinerManager::WriteLog);
-	GCHandle gc = GCHandle::Alloc(writLogFunc);
-	IntPtr func = Marshal::GetFunctionPointerForDelegate(writLogFunc);
-	LoggerCallbackFunc necb = static_cast<LoggerCallbackFunc>(func.ToPointer());
-	this->_impl->setLogCallback(necb);
 
+}
+
+MinerManager::~MinerManager()
+{
+	gch.Free();
 }
 
 MinerManager::MinerManager(bool isFakeRun)
@@ -27,11 +24,19 @@ MinerManager::MinerManager(bool isFakeRun)
 	this->_impl = new XDaggerMinerRuntime::MinerManager(isFakeRun);
 
 	// Set Logger Callback
-	LoggerCallback^ writLogFunc = gcnew LoggerCallback(this, &MinerManager::WriteLog);
-	GCHandle gc = GCHandle::Alloc(writLogFunc);
+	LoggerCallbackFunc^ writLogFunc = gcnew LoggerCallbackFunc(this, &MinerManager::WriteLog);
+	gch = GCHandle::Alloc(writLogFunc);
 	IntPtr func = Marshal::GetFunctionPointerForDelegate(writLogFunc);
-	LoggerCallbackFunc necb = static_cast<LoggerCallbackFunc>(func.ToPointer());
-	this->_impl->setLogCallback(necb);
+	LoggerCallbackC necb = static_cast<LoggerCallbackC>(func.ToPointer());
+	this->_impl->setLoggerCallback(necb);
+
+	//// GC::Collect();
+
+	/*
+	writLogFunc = gcnew LoggerCallback(this, &MinerManager::WriteLog);
+	IntPtr func = Marshal::GetFunctionPointerForDelegate(writLogFunc);
+	necb = static_cast<LoggerCallbackC>(func.ToPointer());
+	*/
 }
 
 List<MinerDevice^>^ MinerManager::GetAllMinerDevices()
@@ -54,12 +59,24 @@ List<MinerDevice^>^ MinerManager::GetAllMinerDevices()
 	return resultList;
 }
 
+String ^ MinerManager::QueryStatistics(int queryId)
+{
+	std::string result = this->_impl->queryStatistics(queryId);
+	return msclr::interop::marshal_as<System::String^>(result);
+}
+
 void MinerManager::DoMining(String ^ poolAddress, String ^ walletAddress)
 {
 	std::string poolAddressStd = msclr::interop::marshal_as<std::string>(poolAddress);
 	std::string walletAddressStd = msclr::interop::marshal_as<std::string>(walletAddress);
-
+	
 	this->_impl->doMining(poolAddressStd, walletAddressStd);
+}
+
+void MinerManager::WriteTestMessage()
+{
+	std::string msg = "WriteTestMessage from MinerManager.";
+	WriteLog(0, 99, msg.c_str());
 }
 
 void MinerManager::SetLogger(LoggerBase ^ logger)
@@ -67,7 +84,7 @@ void MinerManager::SetLogger(LoggerBase ^ logger)
 	this->_logger = logger;
 }
 
-void MinerManager::WriteLog(int level, int eventId, std::string message)
+void MinerManager::WriteLog(int level, int eventId, const char* message)
 {
 	if (this->_logger != nullptr)
 	{

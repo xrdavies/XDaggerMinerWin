@@ -65,7 +65,7 @@ namespace XDaggerMinerDaemon
             get; set;
         }
 
-        [JsonProperty(PropertyName = "wallet")]
+        [JsonProperty(PropertyName = "wallet_address")]
         public string WalletAddress
         {
             get; set;

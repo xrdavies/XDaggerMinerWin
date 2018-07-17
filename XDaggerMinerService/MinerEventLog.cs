@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using XDaggerMinerDaemon;
 using XDaggerMinerRuntimeCLI;
 
 namespace XDaggerMinerService
@@ -40,15 +41,41 @@ namespace XDaggerMinerService
             this.implementEventLog.Source = sourceName;
             this.implementEventLog.Log = logName;
         }
-
-
-        public void WriteInformation(int eventId, string message)
-        {
-            WriteLog(0, eventId, message);
-        }
-
+        
         public override void WriteLog(int level, int eventId, string message)
         {
+            string formattedMessage = string.Format("[{0}]{1}", eventId, message);
+
+            log4net.ILog log = log4net.LogManager.GetLogger("Service");
+            switch (level)
+            {
+                case 0:
+                    // Trace
+                    log.Debug(formattedMessage);
+                    break;
+                case 1:
+                    // Error
+                    log.Error(formattedMessage);
+                    break;
+                case 2:
+                    // Warning
+                    log.Warn(formattedMessage);
+                    break;
+                case 3:
+                    // Information
+                    log.Info(formattedMessage);
+                    break;
+                default:
+                    log.Fatal(formattedMessage);
+                    break;
+            }
+
+            if (level == 0)
+            {
+                // If this is trace, just return
+                return;
+            }
+
             EventLogEntryType entryType;
             switch (level)
             {
@@ -58,7 +85,7 @@ namespace XDaggerMinerService
                 case 2:
                     entryType = EventLogEntryType.Warning;
                     break;
-                case 4:
+                case 3:
                     entryType = EventLogEntryType.Information;
                     break;
                 default:

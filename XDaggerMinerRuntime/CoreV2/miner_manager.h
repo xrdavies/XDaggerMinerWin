@@ -17,52 +17,72 @@
 #include <stdio.h>
 #include "stdafx.h"
 #include "miner_device.h"
-
+/// #include "../Core/Farm.h"
 /// #include "Core/Exceptions.h"
 /// #include "Core/Workers/CLMiner.h"
 
+// using namespace XDag;
+
+#ifdef __cplusplus
 extern "C"
 {
-	typedef void(__stdcall * LoggerCallback)(int, int, std::string);
-	typedef void(__stdcall * TraceCallback)(std::string);
+#endif
 
+	typedef void(__stdcall * LoggerCallbackC)(int, int, const char*);
+
+#ifdef __cplusplus
 }
+#endif
+
+class XPool;
+
+namespace XDag
+{
+	class Farm;
+}
+
+static LoggerCallbackC cb;
 
 namespace XDaggerMinerRuntime
 {
-
-	
-	// TODO: Seems not useful anymore
-	class NATIVE_LIB_EXPORT Logger {
-	public:
-		Logger();
-
-	protected:
-
-		void write();
-	};
-
-
 	//
 	// The main methods for CLI to call
 	//
 	class NATIVE_LIB_EXPORT MinerManager {
 	public:
+
+		typedef enum LoggerLevel
+		{
+			LoggerLevel_Trace = 0,
+			LoggerLevel_Error = 1,
+			LoggerLevel_Warning = 2,
+			LoggerLevel_Information = 3
+		} LoggerLevel;
+
+
+
 		MinerManager();
 		MinerManager(bool isFakeRun);
 
-		void setLogCallback(LoggerCallback loggerFunction);
+		void setLoggerCallback(LoggerCallbackC loggerFunction);
 		
 		// Main Functions
 
 		std::vector< MinerDevice* > getAllMinerDevices();
 
-		//// void doMining(std::string& remote, unsigned recheckPeriod);	// DEPRECATED
+		// Query Status
+		// queryId:		1: status	2. hashrate
+		//
+		std::string queryStatistics(int queryId);
+
+		// Do Mining
 		void doMining(std::string poolAddress, std::string walletAddress);
+
+		void doTesting(LoggerCallbackC loggerFunction);
+
 
 	private:
 
-		
 		// void doBenchmark(MinerType type, unsigned warmupDuration = 15, unsigned trialDuration = 3, unsigned trials = 5);
 		// void doMining(MinerType type, std::string& remote, unsigned recheckPeriod);
 		void configureGpu();
@@ -71,15 +91,27 @@ namespace XDaggerMinerRuntime
 		
 		
 		// Loggers
-		LoggerCallback _logCallback;
-		void logInformation(int eventId, std::string message);
-		void logWarning(int eventId, std::string message);
+		LoggerCallbackC _loggerCallback;
+		void logTrace(int eventId, std::string message);
 		void logError(int eventId, std::string message);
+		void logWarning(int eventId, std::string message);
+		void logInformation(int eventId, std::string message);
 
 		void doRealMiningWork(std::string& poolAddress, std::string& walletAddress);
 		void MinerManager::doFakeMiningWork();
 
+		// Status: running, stopped, disconnected, connected
+		std::string retrieveRunningStatus();
+
+		// HashRate: e.g. "15.39"
+		std::string retrieveHashrate();
+
+
 		// Private members
+		XPool * _xPool = nullptr;
+		XDag::Farm * _farm = nullptr;
+
+
 		bool _isRunning = false;
 
 

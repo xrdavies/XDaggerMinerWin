@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.IO;
 using System.IO.Pipes;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.ServiceProcess;
 using System.Text;
 using System.Threading;
@@ -16,31 +17,45 @@ using XDaggerMinerRuntimeCLI;
 
 namespace XDaggerMinerService
 {
+    
     public partial class MinerService : ServiceBase
     {
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
+        public delegate void ProgressCallback(string value);
+
+        [DllImport("XDaggerMinerRuntime.dll")]
+        public static extern void DoWork([MarshalAs(UnmanagedType.FunctionPtr)] ProgressCallback callbackPointer);
+        
+
         private static readonly string NamedPipeServerNameTemplate = "XDaggerMinerPipe_{0}";
 
         private MinerEventLog minerEventLog;
 
+        private ConsoleLogger consoleLog;
+        
         private MinerManager minerManager;
 
         private MinerConfig config;
 
         private string instanceId = null;
 
-        private Task pipelineServerTask = null;
+        private Task namedPipeServerTask = null;
 
         public MinerService()
         {
             InitializeComponent();
-
+            
             config = MinerConfig.ReadFromFile();
+            minerManager = new MinerManager(config.IsFakeRun);
 
             minerEventLog = new MinerEventLog();
-            minerManager = new MinerManager(config.IsFakeRun);
             minerManager.SetLogger(minerEventLog);
 
-            pipelineServerTask = new Task(() =>
+            minerEventLog.WriteLog(0, 0, "MinerService Started.");
+
+            /// minerManager.DoMining(config.PoolAddress, config.WalletAddress);
+
+            namedPipeServerTask = new Task(() =>
             {
                 NamedPipeServerMain();
             });
@@ -48,30 +63,36 @@ namespace XDaggerMinerService
 
         protected override void OnStart(string[] args)
         {
-            
             // Set up a timer to trigger every minute.  
             System.Timers.Timer timer = new System.Timers.Timer();
-            timer.Interval = 10000;
+            timer.Interval = 3000;
             timer.Elapsed += new System.Timers.ElapsedEventHandler(this.OnTimerWork);
             timer.Start();
 
-            if (pipelineServerTask.Status != TaskStatus.Running)
+            if (namedPipeServerTask.Status != TaskStatus.Running)
             {
-                pipelineServerTask.Start();
+                namedPipeServerTask.Start();
             }
 
-            minerEventLog.WriteInformation(0, "XDaggerMiner Service Started.");
+            /*
+            minerManager = new MinerManager(config.IsFakeRun);
+            consoleLog = new ConsoleLogger();
+            minerManager.SetLogger(consoleLog);
+
+            //ProgressCallback callback = ((value) => { consoleLog.WriteLog(0, 0, value); });
+            //DoWork(callback);
+
+            minerManager.DoMining(config.PoolAddress, config.WalletAddress);
+            */
+
 
         }
 
         protected override void OnStop()
         {
-            
-            minerEventLog.WriteInformation(0, "XDaggerMiner Service Stopped.");
+            minerEventLog.WriteLog(0, 0, "MinerService Started.");
 
         }
-
-
 
         private void OnTimer(object sender, ElapsedEventArgs e)
         {
@@ -82,20 +103,22 @@ namespace XDaggerMinerService
             using (StreamReader sr = new StreamReader(defaultConfigFileName))
             {
                 string jsonString = sr.ReadToEnd();
-                minerEventLog.WriteInformation(0, "Triggered by Timer." + jsonString);
+                consoleLog.WriteLog(3, 0, "Triggered by Timer." + jsonString);
             }
             
         }
 
         private void OnTimerWork(object sender, ElapsedEventArgs e)
         {
-            minerEventLog.WriteInformation(0, "Triggered by Timer.");
+            
+            //ProgressCallback callback = ((value) => { consoleLog.WriteLog(0, 0, value); });
+            //DoWork(callback);
 
             minerManager.DoMining(config.PoolAddress, config.WalletAddress);
 
-            if (pipelineServerTask.Status != TaskStatus.Running)
+            if (namedPipeServerTask.Status != TaskStatus.Running)
             {
-                pipelineServerTask.Start();
+                namedPipeServerTask.Start();
             }
         }
 
@@ -161,15 +184,15 @@ namespace XDaggerMinerService
         {
             if (command.Equals("status"))
             {
-                return "running";
+                return minerManager.QueryStatistics(1);
             }
             if (command.Equals("hashrate"))
             {
-                return "15.4";
+                return minerManager.QueryStatistics(2);
             }
             else
             {
-                return "unknown";
+                return "unknowncommand";
             }
         }
     }

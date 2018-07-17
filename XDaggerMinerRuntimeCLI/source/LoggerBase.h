@@ -9,18 +9,7 @@ using namespace System::Collections::Generic;
 using namespace System::Runtime::InteropServices;
 
 
-typedef void(__stdcall * LoggerCallbackFunc)(int, int, std::string);
-typedef void(__stdcall * TraceCallbackFunc)(std::string);
-
-
 namespace XDaggerMinerRuntimeCLI {
-
-
-	[UnmanagedFunctionPointer(CallingConvention::StdCall)]
-	public delegate void LoggerCallback(int, int, std::string);
-
-	[UnmanagedFunctionPointer(CallingConvention::StdCall)]
-	public delegate void TraceCallback(std::string);
 
 	public ref class LoggerBase
 	{
@@ -30,8 +19,12 @@ namespace XDaggerMinerRuntimeCLI {
 		virtual void WriteLog(int level, int eventId, String ^ message);
 		virtual void WriteTrace(String ^ message);
 
-	private:
+	protected:
 
+		const int Level_Trace = 0;
+		const int Level_Error = 1;
+		const int Level_Warning = 2;
+		const int Level_Information = 3;
 	};
 
 

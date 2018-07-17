@@ -11,8 +11,26 @@ using XDaggerMinerRuntimeCLI;
 
 namespace XDaggerMinerDaemon
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public class ConsoleLogger : LoggerBase
     {
+        /// <summary>
+        /// 
+        /// </summary>
+        private static ConsoleLogger instance = null;
+
+        public static ConsoleLogger GetInstance()
+        {
+            if (instance == null)
+            {
+                instance = new ConsoleLogger();
+            }
+
+            return instance;
+        }
+        
         public override void WriteLog(int level, int eventId, string message)
         {
             string formattedMessage = string.Format("[{0}]{1}", eventId, message);
@@ -21,20 +39,20 @@ namespace XDaggerMinerDaemon
             switch (level)
             {
                 case 0:
-                    // Information
-                    log.Info(formattedMessage);
+                    // Trace
+                    log.Debug(formattedMessage);
                     break;
                 case 1:
-                    // Warning
-                    log.Warn(formattedMessage);
-                    break;
-                case 2:
                     // Error
                     log.Error(formattedMessage);
                     break;
+                case 2:
+                    // Warning
+                    log.Warn(formattedMessage);
+                    break;
                 case 3:
-                    // Fatal
-                    log.Fatal(formattedMessage);
+                    // Information
+                    log.Info(formattedMessage);
                     break;
                 default:
                     log.Fatal(formattedMessage);
@@ -59,7 +77,8 @@ namespace XDaggerMinerDaemon
                 {
                     StackFrame frm = new StackFrame(stackTraceIndex);
                     MethodInfo mi = (MethodInfo)frm.GetMethod();
-                    if (mi.DeclaringType != System.Reflection.MethodBase.GetCurrentMethod().DeclaringType)
+                    if (mi.DeclaringType != System.Reflection.MethodBase.GetCurrentMethod().DeclaringType
+                         && mi.Name != "WriteLog")
                     {
                         string methodSignature = mi.ToString();
                         methodSignature = methodSignature.Substring(methodSignature.IndexOf(' ') + 1);
