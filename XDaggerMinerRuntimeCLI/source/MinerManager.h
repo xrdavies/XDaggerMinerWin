@@ -48,6 +48,8 @@ namespace XDaggerMinerRuntimeCLI {
 		//
 		String ^ QueryStatistics(int queryId);
 
+		void ConfigureMiningDevice(int platformId, int deviceId);
+
 		void WriteTestMessage();
 
 		void WriteLog(int level, int eventId, const char* message);

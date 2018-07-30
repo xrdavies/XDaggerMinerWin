@@ -121,6 +121,8 @@ void MinerManager::doRealMiningWork(std::string& poolAddress, std::string& walle
 		return;
 	}
 
+	//// configureGpu();
+
 	XTaskProcessor taskProcessor;
 
 	logTrace(0, "Initializing XPool.");
@@ -234,6 +236,49 @@ void MinerManager::doFakeMiningWork()
 		this_thread::sleep_for(chrono::milliseconds(_poolRecheckPeriod));
 		++iteration;
 	}
+}
+
+void MinerManager::configureGpu()
+{
+	logTrace(0, "Configuring GPU...");
+	if (_openclDeviceCount > 0)
+	{
+		CLMiner::SetDevices(_openclDevices, _openclDeviceCount);
+		_openclMiningDevices = _openclDeviceCount;
+	}
+
+	if (!CLMiner::ConfigureGPU(
+		_localWorkSize,
+		_globalWorkSizeMultiplier,
+		_openclPlatform,
+		_useOpenClCpu))
+	{
+		logError(0, "Configure GPU Error.");
+		return;
+	}
+
+	CLMiner::SetNumInstances(_openclMiningDevices);
+	CLMiner::SetUseNvidiaFix(true);
+	logInformation(0, "Configure GPU Completed.");
+}
+
+void MinerManager::configureCpu()
+{
+	logTrace(0, "Configuring CPU...");
+	if (_cpuMiningThreads == 0)
+	{
+		_cpuMiningThreads = CpuInfo::GetNumberOfCpuCores();
+	}
+
+	XCpuMiner::SetNumInstances(_cpuMiningThreads);
+	logInformation(0, "Configure CPU Completed.");
+}
+
+void MinerManager::configureMiningDevice(int platformId, int deviceId)
+{
+	_openclPlatform = platformId;
+	_openclDeviceCount = 1;
+	_openclDevices[0] = deviceId;
 }
 
 string MinerManager::queryStatistics(int queryId)

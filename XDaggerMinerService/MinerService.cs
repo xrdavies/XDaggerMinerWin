@@ -51,8 +51,6 @@ namespace XDaggerMinerService
 
             minerEventLog.WriteLog(0, 0, "MinerService Started.");
 
-            /// minerManager.DoMining(config.PoolAddress, config.WalletAddress);
-
             namedPipeServerTask = new Task(() =>
             {
                 NamedPipeServerMain();
@@ -61,6 +59,9 @@ namespace XDaggerMinerService
 
         protected override void OnStart(string[] args)
         {
+            // First, configure the Miner
+            ConfigureMiner();
+
             // Set up a timer to trigger every minute.  
             System.Timers.Timer timer = new System.Timers.Timer();
             timer.Interval = 10000;
@@ -82,8 +83,6 @@ namespace XDaggerMinerService
 
             minerManager.DoMining(config.PoolAddress, config.WalletAddress);
             */
-
-
         }
 
         protected override void OnStop()
@@ -103,12 +102,10 @@ namespace XDaggerMinerService
                 string jsonString = sr.ReadToEnd();
                 consoleLog.WriteLog(3, 0, "Triggered by Timer." + jsonString);
             }
-            
         }
 
         private void OnTimerWork(object sender, ElapsedEventArgs e)
         {
-            
             //ProgressCallback callback = ((value) => { consoleLog.WriteLog(0, 0, value); });
             //DoWork(callback);
 
@@ -118,6 +115,16 @@ namespace XDaggerMinerService
             {
                 namedPipeServerTask.Start();
             }
+        }
+
+        private void ConfigureMiner()
+        {
+            if(minerManager == null || config == null || config.Device == null)
+            {
+                return;
+            }
+            
+            minerManager.ConfigureMiningDevice(config.Device.PlatformId, config.Device.DeviceId);
         }
 
         public void NamedPipeServerMain()

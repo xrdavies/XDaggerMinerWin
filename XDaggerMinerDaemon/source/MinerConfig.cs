@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace XDaggerMinerDaemon
@@ -139,7 +140,7 @@ namespace XDaggerMinerDaemon
 
         public MinerConfigDevice(string deviceId, string displayName, string deviceVersion, string driverVersion)
         {
-            this.DeviceId = deviceId;
+            this.Id = deviceId;
             this.DisplayName = displayName;
             this.DeviceVersion = deviceVersion;
             this.DriverVersion = driverVersion;
@@ -158,10 +159,45 @@ namespace XDaggerMinerDaemon
         }
         */
 
+        private string id = string.Empty;
+        private int platformId = 0;
+        private int deviceId = 0;
+
         [JsonProperty(PropertyName = "id")]
-        public string DeviceId
+        public string Id
         {
-            get; set;
+            get
+            {
+                return id;
+            }
+            set
+            {
+                id = value;
+
+                string deviceIdFormat = @"^p_(?<pId>[0-9]+)_d_(?<dId>[0-9]+)$";
+                MatchCollection matches = Regex.Matches(id, deviceIdFormat);
+                if (matches.Count > 0)
+                {
+                    Int32.TryParse(matches[0].Groups["pId"].Value, out platformId);
+                    Int32.TryParse(matches[0].Groups["dId"].Value, out deviceId);
+                }
+            }
+        }
+
+        public int PlatformId
+        {
+            get
+            {
+                return platformId;
+            }
+        }
+
+        public int DeviceId
+        {
+            get
+            {
+                return deviceId;
+            }
         }
 
         [JsonProperty(PropertyName = "display_name")]

@@ -65,6 +65,11 @@ String ^ MinerManager::QueryStatistics(int queryId)
 	return msclr::interop::marshal_as<System::String^>(result);
 }
 
+void MinerManager::ConfigureMiningDevice(int platformId, int deviceId)
+{
+	this->_impl->configureMiningDevice(platformId, deviceId);
+}
+
 void MinerManager::DoMining(String ^ poolAddress, String ^ walletAddress)
 {
 	std::string poolAddressStd = msclr::interop::marshal_as<std::string>(poolAddress);

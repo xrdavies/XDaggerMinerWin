@@ -76,9 +76,8 @@ namespace XDaggerMinerRuntime
 		// Do Mining
 		void doMining(std::string poolAddress, std::string walletAddress);
 
-		void doTesting(LoggerCallbackC loggerFunction);
-
-
+		void configureMiningDevice(int platformId, int deviceId);
+		
 	private:
 
 		// void doBenchmark(MinerType type, unsigned warmupDuration = 15, unsigned trialDuration = 3, unsigned trials = 5);
@@ -116,13 +115,22 @@ namespace XDaggerMinerRuntime
 
 		// Mining options
 		bool _running = true;
+		
+		// Device and Platform
 		unsigned _openclPlatform = 0;
+		unsigned _openclDeviceCount = 0;
+		unsigned _openclDevices[16];
+		unsigned _openclMiningDevices = 16;
+
+		unsigned _localWorkSize = 128U;
+		unsigned _globalWorkSizeMultiplier = true;
+		//// unsigned _localWorkSize = CLMiner::_defaultLocalWorkSize;
+		//// unsigned _globalWorkSizeMultiplier = CLMiner::_defaultGlobalWorkSizeMultiplier;
+
 		unsigned _cpuMiningThreads = 0;
-		///unsigned _openclMiningDevices = MAX_CL_DEVICES;
 		bool _shouldListDevices = false;
 		unsigned _openclSelectedKernel = 0;  ///< A numeric value for the selected OpenCL kernel
-		unsigned _openclDeviceCount = 0;
-		/// unsigned _openclDevices[MAX_CL_DEVICES];
+		/// 
 		bool _useOpenClCpu = false;
 		/// unsigned _globalWorkSizeMultiplier = XDag::CLMiner::_defaultGlobalWorkSizeMultiplier;
 		/// unsigned _localWorkSize = XDag::CLMiner::_defaultLocalWorkSize;
