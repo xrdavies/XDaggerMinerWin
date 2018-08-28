@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using XDaggerMinerDaemon.Utils;
 using XDaggerMiner.Common;
+using XDaggerMiner.Common.Contracts;
 using XDaggerMinerDaemon.Commands.Outputs;
 
 namespace XDaggerMinerDaemon.Commands
@@ -50,7 +51,7 @@ namespace XDaggerMinerDaemon.Commands
 
         public override CommandResult Execute(string parameter)
         {
-            serviceInstanceId = MinerConfig.GetInstance().InstanceId;
+            serviceInstanceId = MinerConfig.GetInstance().InstanceId?.ToString();
 
             string operationName = parameter;
             switch (operationName)
@@ -103,7 +104,7 @@ namespace XDaggerMinerDaemon.Commands
         {
             try
             {
-                string newInstanceId = ServiceUtil.DetectAvailableInstanceId();
+                string newInstanceId = ServiceUtil.DetectAvailableInstanceId()?.ToString();
 
                 return CommandResult.CreateResult(MessageOutput.Create(newInstanceId));
             }

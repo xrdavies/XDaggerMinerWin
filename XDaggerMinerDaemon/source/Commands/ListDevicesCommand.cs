@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 using XDaggerMinerRuntimeCLI;
 using XDaggerMinerDaemon.Commands.Outputs;
 using XDaggerMiner.Common;
+using XDaggerMiner.Common.Contracts;
+using XDaggerMiner.Common.Utils;
 
 namespace XDaggerMinerDaemon.Commands
 {
@@ -33,7 +35,7 @@ namespace XDaggerMinerDaemon.Commands
         {
             // List all devices
             MinerManager minerManager = new MinerManager();
-            ConsoleLogger logger = new ConsoleLogger();
+            PrimaryLogger logger = new PrimaryLogger();
             minerManager.SetLogger(logger);
 
             try

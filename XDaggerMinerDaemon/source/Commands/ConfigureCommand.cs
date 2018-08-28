@@ -5,6 +5,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using XDaggerMiner.Common;
+using XDaggerMiner.Common.Contracts;
+using XDaggerMiner.Common.Utils;
 using XDaggerMinerDaemon.Utils;
 using XDaggerMinerRuntimeCLI;
 
@@ -54,7 +56,7 @@ namespace XDaggerMinerDaemon.Commands
             if (!string.IsNullOrEmpty(configParameters.DeviceId))
             {
                 MinerManager minerManager = new MinerManager();
-                ConsoleLogger logger = new ConsoleLogger();
+                PrimaryLogger logger = new PrimaryLogger();
                 minerManager.SetLogger(logger);
 
                 List<MinerDevice> deviceList = minerManager.GetAllMinerDevices();
@@ -75,30 +77,67 @@ namespace XDaggerMinerDaemon.Commands
                 }
             }
 
-            if (!string.IsNullOrEmpty(configParameters.Wallet))
+            if (!string.IsNullOrEmpty(configParameters.XDaggerWallet) && !string.IsNullOrEmpty(configParameters.EthPoolAddress))
             {
+                throw new TargetExecutionException(DaemonErrorCode.CONFIG_ONLY_ONE_INSTANCE_TYPE_ALLOWED, "Only one type of miner instance is allowed.");
+            }
+
+            if (!string.IsNullOrEmpty(configParameters.XDaggerWallet))
+            {
+                string wallet = configParameters.XDaggerWallet.Trim();
+
                 // TODO: Should validate the Wallet address first
                 if (false)
                 {
-                    throw new TargetExecutionException(DaemonErrorCode.CONFIG_WALLET_FORMET_ERROR, string.Format("Wallet format is not correct. Wallet=[{0}]", configParameters.Wallet));
+                    throw new TargetExecutionException(DaemonErrorCode.CONFIG_WALLET_FORMET_ERROR, string.Format("Wallet format is not correct. Wallet=[{0}]", configParameters.XDaggerWallet));
                 }
 
                 if (false)
                 {
-                    throw new TargetExecutionException(DaemonErrorCode.CONFIG_WALLET_NOT_FOUND, string.Format("Wallet cannot be found. Wallet=[{0}]", configParameters.Wallet));
+                    throw new TargetExecutionException(DaemonErrorCode.CONFIG_WALLET_NOT_FOUND, string.Format("Wallet cannot be found. Wallet=[{0}]", configParameters.XDaggerWallet));
                 }
 
-                config.WalletAddress = configParameters.Wallet;
+                if (config.XDaggerMiner == null)
+                {
+                    config.XDaggerMiner = new XDaggerMinerConfig();
+                }
+
+                config.InstanceType = MinerConfig.Instancetypes.XDagger;
+                config.XDaggerMiner.WalletAddress = wallet;
             }
 
-            if (!string.IsNullOrEmpty(configParameters.InstanceId) && configParameters.AutoDecideInstanceId)
+            if (!string.IsNullOrEmpty(configParameters.EthPoolAddress))
+            {
+                string ethPoolAddress = configParameters.EthPoolAddress.Trim();
+
+                // TODO: Should validate the Wallet address first
+                if (false)
+                {
+                    throw new TargetExecutionException(DaemonErrorCode.CONFIG_WALLET_FORMET_ERROR, string.Format("Wallet format is not correct. Wallet=[{0}]", configParameters.XDaggerWallet));
+                }
+
+                if (false)
+                {
+                    throw new TargetExecutionException(DaemonErrorCode.CONFIG_WALLET_NOT_FOUND, string.Format("Wallet cannot be found. Wallet=[{0}]", configParameters.XDaggerWallet));
+                }
+
+                if (config.EthMiner == null)
+                {
+                    config.EthMiner = new EthMinerConfig();
+                }
+
+                config.InstanceType = MinerConfig.Instancetypes.Eth;
+                config.EthMiner.PoolAddress = ethPoolAddress;
+            }
+
+                if (!string.IsNullOrEmpty(configParameters.InstanceId) && configParameters.AutoDecideInstanceId)
             {
                 throw new TargetExecutionException(DaemonErrorCode.COMMAND_PARAM_ERROR, "Cannot specify InstanceId while AutoDecideInstanceId is used.");
             }
 
             if (!string.IsNullOrEmpty(configParameters.InstanceId))
             {
-                config.InstanceId = configParameters.InstanceId;
+                config.InstanceId = Int32.Parse(configParameters.InstanceId.Trim());
             }
 
             if (configParameters.AutoDecideInstanceId)
@@ -121,14 +160,19 @@ namespace XDaggerMinerDaemon.Commands
 
     public class ConfigureParameter
     {
+        public string InstanceId;
+
         public string DeviceId;
 
         /// <summary>
-        /// The Wallet address of the customer
+        /// The XDagger Wallet address of the customer
         /// </summary>
-        public string Wallet;
+        public string XDaggerWallet;
 
-        public string InstanceId;
+        /// <summary>
+        /// The Eth Miner Pool address
+        /// </summary>
+        public string EthPoolAddress;
 
         public bool AutoDecideInstanceId = false;
     }

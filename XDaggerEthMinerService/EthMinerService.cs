@@ -4,102 +4,144 @@ using System.ComponentModel;
 using System.Data;
 using System.Diagnostics;
 using System.IO;
+using System.IO.Pipes;
 using System.Linq;
 using System.ServiceProcess;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Timers;
-using XDaggerMinerDaemon;
+using log4net;
+using XDaggerMiner.Common;
+using XDaggerMiner.Common.Contracts;
 
 namespace XDaggerEthMinerService
 {
+    public enum MinerState
+    {
+
+    }
+
     public partial class EthMinerService : ServiceBase
     {
-        MinerConfig minerConfig = null;
+        private static readonly string NamedPipeServerNameTemplate = "XDaggerEthMinerPipe_{0}";
 
-        Process ehtMinerProcess = null;
+        private MinerConfig minerConfig = null;
 
-        System.Diagnostics.EventLog implementEventLog = null;
+        private Process ehtMinerProcess = null;
+
+        private EventLog implementEventLog = null;
+
+        private ILog logger = LogManager.GetLogger("EthMinerService");
+
+        private static TimeSpan timerWorkInterval = TimeSpan.FromSeconds(5);
+
+        private bool isTimerWorkRunning = false;
+
+        private Task namedPipeServerTask = null;
 
         public EthMinerService()
         {
             InitializeComponent();
+
             minerConfig = MinerConfig.ReadFromFile();
 
-            
+            namedPipeServerTask = new Task(() =>
+            {
+                NamedPipeServerMain();
+            });
         }
 
         protected override void OnStart(string[] args)
+        {
+            InitializeEventLog();
+
+            LaunchEthMiner();
+
+            System.Timers.Timer timer = new System.Timers.Timer();
+            timer.Interval = timerWorkInterval.TotalMilliseconds;
+            timer.Elapsed += new ElapsedEventHandler(this.OnTimerWork);
+            timer.Start();
+
+            if (namedPipeServerTask.Status != TaskStatus.Running)
+            {
+                namedPipeServerTask.Start();
+            }
+
+        }
+
+        private void OnTimerWork(object sender, ElapsedEventArgs e)
+        {
+            if (isTimerWorkRunning)
+            {
+                return;
+            }
+
+            isTimerWorkRunning = true;
+            logger.Debug("OnTimerWork");
+            this.implementEventLog.WriteEntry("OnTimerWork");
+
+            DateTime timerWorkStartTime = DateTime.UtcNow;
+
+            StreamReader reader = ehtMinerProcess.StandardError;
+            while (reader != null && !reader.EndOfStream && timerWorkStartTime.Add(timerWorkInterval) > DateTime.UtcNow)
+            {
+                string line = reader.ReadLine();
+                logger.Debug(line);
+                //// this.implementEventLog.WriteEntry(line);
+
+                Thread.Sleep(30);
+            }
+
+            isTimerWorkRunning = false;
+        }
+
+        private void InitializeEventLog()
+        {
+            string sourceName = "XDaggerEthMiner";
+            string logName = "XDaggerMinerLog";
+
+            this.implementEventLog = new EventLog();
+            ((ISupportInitialize)(this.implementEventLog)).BeginInit();
+            ((ISupportInitialize)(this.implementEventLog)).EndInit();
+
+            if (!EventLog.SourceExists(sourceName))
+            {
+                EventLog.CreateEventSource(
+                    sourceName, logName);
+            }
+
+            this.implementEventLog.Source = sourceName;
+            this.implementEventLog.Log = logName;
+        }
+
+        private void LaunchEthMiner()
         {
             var location = System.Reflection.Assembly.GetExecutingAssembly().Location;
             var directoryPath = Path.GetDirectoryName(location);
 
             string ethExecutionFileFullPath = Path.Combine(directoryPath, "External/ethminer.exe");
 
-            // log4net.GlobalContext.Properties["LogFilePath"] = directoryPath; //log file path
-            // log4net.Config.XmlConfigurator.Configure();
-
-            ehtMinerProcess = new System.Diagnostics.Process();
-            ProcessStartInfo startInfo = new System.Diagnostics.ProcessStartInfo();
-            startInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
+            ehtMinerProcess = new Process();
+            ProcessStartInfo startInfo = new ProcessStartInfo();
+            startInfo.WindowStyle = ProcessWindowStyle.Hidden;
             startInfo.UseShellExecute = false;
             startInfo.CreateNoWindow = true;
             startInfo.RedirectStandardOutput = true;
             startInfo.RedirectStandardError = true;
 
             startInfo.FileName = ethExecutionFileFullPath;
-            startInfo.Arguments = "-G stratum1+tcp://73037FE73337D16D799c64632C1c79C19C8A85E6@eth-ar.dwarfpool.com:8008/7Fb21ac4Cd75d9De3E1c5D11D87bB904c01880fc/charlie_5899@hotmail.com";
+            startInfo.Arguments = "-G " + minerConfig.EthMiner?.PoolAddress;
             ehtMinerProcess.StartInfo = startInfo;
 
             try
             {
                 ehtMinerProcess.Start();
-                //// ehtMinerProcess.ErrorDataReceived += Process_ErrorDataReceived;
+                isTimerWorkRunning = false;
             }
             catch (Exception ex)
             {
                 throw ex;
-            }
-
-            string sourceName = "XDaggerEthMiner";
-            string logName = "XDaggerMinerLog";
-
-            this.implementEventLog = new System.Diagnostics.EventLog();
-            ((System.ComponentModel.ISupportInitialize)(this.implementEventLog)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.implementEventLog)).EndInit();
-
-            if (!System.Diagnostics.EventLog.SourceExists(sourceName))
-            {
-                System.Diagnostics.EventLog.CreateEventSource(
-                    sourceName, logName);
-            }
-
-            this.implementEventLog.Source = sourceName;
-            this.implementEventLog.Log = logName;
-            
-            System.Timers.Timer timer = new System.Timers.Timer();
-            timer.Interval = 3000;
-            timer.Elapsed += new System.Timers.ElapsedEventHandler(this.OnTimerWork);
-            //// timer.Start();
-        }
-
-        private void OnTimerWork(object sender, ElapsedEventArgs e)
-        {
-            log4net.ILog log = log4net.LogManager.GetLogger("Test");
-
-            log.Debug("OnTimerWork");
-
-            this.implementEventLog.WriteEntry("OnTimerWork");
-
-            StreamReader reader = ehtMinerProcess.StandardError;
-            while (!reader.EndOfStream)
-            {
-                string line = reader.ReadLine();
-                log.Debug(line);
-                this.implementEventLog.WriteEntry(line);
-
-                Thread.Sleep(30);
             }
         }
 
@@ -121,6 +163,80 @@ namespace XDaggerEthMinerService
                 {
                     // Swallow the exceptions
                 }
+            }
+        }
+
+        public void NamedPipeServerMain()
+        {
+            try
+            {
+                using (var server = new NamedPipeServerStream(string.Format(NamedPipeServerNameTemplate, 0)))
+                {
+                    using (StreamReader reader = new StreamReader(server))
+                    {
+                        using (StreamWriter writter = new StreamWriter(server))
+                        {
+                            while (true)
+                            {
+                                server.WaitForConnection();
+
+                                try
+                                {
+                                    while (true)
+                                    {
+                                        var line = reader.ReadLine();
+                                        string output = ExecuteNamedPipeCommand(line);
+                                        writter.WriteLine(output);
+                                        writter.Flush();
+
+                                        Thread.Sleep(30);
+                                    }
+                                }
+                                catch (IOException)
+                                {
+
+                                }
+                                catch (Exception)
+                                {
+
+                                }
+                                finally
+                                {
+                                    server.Disconnect();
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            catch (IOException)
+            {
+                // The NamedPipeServerStream is already opened
+            }
+            catch (Exception)
+            {
+                // TODO: Handle the exceptions
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="command"></param>
+        /// <returns></returns>
+        private string ExecuteNamedPipeCommand(string command)
+        {
+            if (command.Equals("status"))
+            {
+                return MinerServiceState.Mining;
+            }
+            if (command.Equals("hashrate"))
+            {
+                return "0";
+            }
+            else
+            {
+                return "unknowncommand";
             }
         }
     }

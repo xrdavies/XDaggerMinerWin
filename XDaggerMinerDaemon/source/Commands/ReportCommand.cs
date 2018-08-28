@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using XDaggerMiner.Common;
+using XDaggerMiner.Common.Contracts;
 using XDaggerMinerDaemon.Commands.Outputs;
 using XDaggerMinerDaemon.Utils;
 
@@ -39,7 +40,7 @@ namespace XDaggerMinerDaemon.Commands
                 ReportOutput outputResult = new ReportOutput();
                 outputResult.Status = ReportOutput.StatusEnum.Unknown;
 
-                string instanceId = MinerConfig.GetInstance().InstanceId;
+                string instanceId = MinerConfig.GetInstance().InstanceId?.ToString();
 
                 if (!ServiceUtil.CheckServiceExist(ServiceUtil.GetServiceName(instanceId)))
                 {
@@ -76,7 +77,7 @@ namespace XDaggerMinerDaemon.Commands
         /// <returns></returns>
         private void QueryServiceStatusByNamedPipe(ReportOutput outputResult)
         {
-            string instanceId = MinerConfig.GetInstance().InstanceId;
+            string instanceId = MinerConfig.GetInstance().InstanceId?.ToString();
 
             string namedPipeName = string.Format(NamedPipeServerNameTemplate, instanceId);
             outputResult.HashRate = -1;
@@ -97,19 +98,19 @@ namespace XDaggerMinerDaemon.Commands
                             
                             switch (status)
                             {
-                                case "mining":
-                                    outputResult.Status = ReportOutput.StatusEnum.Mining;
-                                    outputResult.HashRate = Double.Parse(hashRateStr);
+                                case MinerServiceState.Idle:
                                     break;
-                                case "idle":
-                                case "connected":
+                                case MinerServiceState.Initialzing:
+                                    break;
+                                case MinerServiceState.Connected:
                                     outputResult.Status = ReportOutput.StatusEnum.Connected;
                                     break;
-                                case "disconnected":
+                                case MinerServiceState.Disconnected:
                                     outputResult.Status = ReportOutput.StatusEnum.Disconnected;
                                     break;
-                                case "stopped":
-                                    outputResult.Status = ReportOutput.StatusEnum.Stopped;
+                                case MinerServiceState.Mining:
+                                    outputResult.Status = ReportOutput.StatusEnum.Mining;
+                                    outputResult.HashRate = Double.Parse(hashRateStr);
                                     break;
                                 default:
                                     throw new TargetExecutionException(DaemonErrorCode.REPORT_NAMEDPIPE_ERROR, "status=" + status);

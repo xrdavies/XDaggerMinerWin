@@ -6,6 +6,8 @@ using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using XDaggerMiner.Common;
+using XDaggerMiner.Common.Contracts;
+using XDaggerMiner.Common.Utils;
 using XDaggerMinerDaemon.Commands;
 using XDaggerMinerRuntimeCLI;
 
@@ -27,7 +29,7 @@ namespace XDaggerMinerDaemon
             rawArguments = args;
 
             minerManager = new MinerManager();
-            logger = new ConsoleLogger();
+            logger = new PrimaryLogger();
             minerManager.SetLogger(logger);
         }
 

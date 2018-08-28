@@ -5,7 +5,7 @@ using System.Linq;
 using System.ServiceProcess;
 using System.Text;
 using System.Threading.Tasks;
-using XDaggerMiner.Common;
+using XDaggerMiner.Common.Contracts;
 
 namespace XDaggerMinerDaemon.Utils
 {
@@ -92,11 +92,11 @@ namespace XDaggerMinerDaemon.Utils
             return service.Status == ServiceControllerStatus.Running;
         }
 
-        public static string DetectAvailableInstanceId()
+        public static int? DetectAvailableInstanceId()
         {
             if (!CheckServiceExist(ServiceNameBase))
             {
-                return string.Empty;
+                return null;
             }
 
             int instanceNumber = 1;
@@ -106,7 +106,7 @@ namespace XDaggerMinerDaemon.Utils
                 instanceNumber++;
             }
 
-            return instanceNumber.ToString();
+            return instanceNumber;
         }
     }
 }

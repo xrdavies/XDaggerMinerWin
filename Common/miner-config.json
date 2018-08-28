@@ -1,0 +1,12 @@
+{
+    "version": "0.1.0730.0",
+    "instance_type": 1,
+    "is_fake_run": false,
+    "xdagger": {
+        "pool_address": "pool.xdag.us:13654",
+        "wallet_address": "gKNRtSL1pUaTpzMuPMznKw49ILtP6qX3"
+    },
+    "eth": {
+        "pool_address": "stratum1+tcp://73037FE73337D16D799c64632C1c79C19C8A85E6@eth-ar.dwarfpool.com:8008/7Fb21ac4Cd75d9De3E1c5D11D87bB904c01880fc/charlie_5899@hotmail.com"
+    }
+}

@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Timers;
+using XDaggerMiner.Common.Utils;
 using XDaggerMinerDaemon.Commands.Outputs;
 using XDaggerMinerRuntimeCLI;
 
@@ -21,11 +22,11 @@ namespace XDaggerMinerDaemon.Commands
 
         private MinerManager minerManager = null;
 
-        private ConsoleLogger minerLog = null;
+        private PrimaryLogger minerLog = null;
 
         public override CommandResult Execute(string parameter)
         {
-            minerLog = new ConsoleLogger();
+            minerLog = new PrimaryLogger();
             minerManager = new MinerManager(false);
             minerManager.SetLogger(minerLog);
 

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using XDaggerMiner.Common;
+using XDaggerMiner.Common.Contracts;
 
 namespace XDaggerMinerDaemon.Commands
 {

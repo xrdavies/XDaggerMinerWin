@@ -12,7 +12,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Timers;
-using XDaggerMinerDaemon;
+using XDaggerMiner.Common;
 using XDaggerMinerRuntimeCLI;
 
 namespace XDaggerMinerService
@@ -31,7 +31,7 @@ namespace XDaggerMinerService
 
         private MinerEventLog minerEventLog;
 
-        private ConsoleLogger consoleLog;
+        // private ConsoleLogger consoleLog;
         
         private MinerManager minerManager;
 
@@ -72,44 +72,16 @@ namespace XDaggerMinerService
             {
                 namedPipeServerTask.Start();
             }
-
-            /*
-            minerManager = new MinerManager(config.IsFakeRun);
-            consoleLog = new ConsoleLogger();
-            minerManager.SetLogger(consoleLog);
-
-            //ProgressCallback callback = ((value) => { consoleLog.WriteLog(0, 0, value); });
-            //DoWork(callback);
-
-            minerManager.DoMining(config.PoolAddress, config.WalletAddress);
-            */
         }
 
         protected override void OnStop()
         {
-            minerEventLog.WriteLog(0, 0, "MinerService Started.");
-
-        }
-
-        private void OnTimer(object sender, ElapsedEventArgs e)
-        {
-            var location = System.Reflection.Assembly.GetEntryAssembly().Location;
-            var directoryPath = Path.GetDirectoryName(location);
-
-            string defaultConfigFileName = directoryPath + "/miner-config.json";
-            using (StreamReader sr = new StreamReader(defaultConfigFileName))
-            {
-                string jsonString = sr.ReadToEnd();
-                consoleLog.WriteLog(3, 0, "Triggered by Timer." + jsonString);
-            }
+            minerEventLog.WriteLog(0, 0, "MinerService Stopped.");
         }
 
         private void OnTimerWork(object sender, ElapsedEventArgs e)
         {
-            //ProgressCallback callback = ((value) => { consoleLog.WriteLog(0, 0, value); });
-            //DoWork(callback);
-
-            minerManager.DoMining(config.PoolAddress, config.WalletAddress);
+            minerManager.DoMining(config.XDaggerMiner?.PoolAddress, config.XDaggerMiner?.WalletAddress);
 
             if (namedPipeServerTask.Status != TaskStatus.Running)
             {
@@ -174,7 +146,7 @@ namespace XDaggerMinerService
             {
                 // The NamedPipeServerStream is already opened
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 // TODO: Handle the exceptions
             }

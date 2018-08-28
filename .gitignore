@@ -13,6 +13,9 @@ XDaggerMinerRuntime/x64
 XDaggerMinerRuntime/Debug
 XDaggerMinerRuntimeCLI/x64
 
+Common/bin
+Common/obj
+
 XDaggerMinerDaemon/bin
 XDaggerMinerDaemon/obj
 XDaggerMinerService/bin

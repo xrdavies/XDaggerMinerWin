@@ -98,9 +98,9 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\XDaggerMinerDaemon\XDaggerMinerDaemon.csproj">
-      <Project>{f30b31ca-f647-4487-84ad-65946d1a7676}</Project>
-      <Name>XDaggerMinerDaemon</Name>
+    <ProjectReference Include="..\Common\Common.csproj">
+      <Project>{9b29bba1-424a-49ab-a125-5f59765267d8}</Project>
+      <Name>Common</Name>
     </ProjectReference>
     <ProjectReference Include="..\XDaggerMinerRuntimeCLI\XDaggerMinerRuntimeCLI.vcxproj">
       <Project>{f9e05185-5af2-454e-a901-a3326dd59701}</Project>

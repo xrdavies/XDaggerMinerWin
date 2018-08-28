@@ -9,33 +9,33 @@ using System.Threading.Tasks;
 using XDaggerMinerRuntimeCLI;
 
 
-namespace XDaggerMinerDaemon
+namespace XDaggerMiner.Common.Utils
 {
     /// <summary>
     /// 
     /// </summary>
-    public class ConsoleLogger : LoggerBase
+    public class PrimaryLogger : LoggerBase
     {
         /// <summary>
         /// 
         /// </summary>
-        private static ConsoleLogger instance = null;
+        private static PrimaryLogger instance = null;
 
-        public static ConsoleLogger GetInstance()
+        public static PrimaryLogger GetInstance()
         {
             if (instance == null)
             {
-                instance = new ConsoleLogger();
+                instance = new PrimaryLogger();
             }
 
             return instance;
         }
-        
+
         public override void WriteLog(int level, int eventId, string message)
         {
             string formattedMessage = string.Format("[{0}]{1}", eventId, message);
 
-            log4net.ILog log = log4net.LogManager.GetLogger(ConsoleLogger.RetrieveCallerMethod());
+            log4net.ILog log = log4net.LogManager.GetLogger(PrimaryLogger.RetrieveCallerMethod());
             switch (level)
             {
                 case 0:
@@ -62,7 +62,7 @@ namespace XDaggerMinerDaemon
 
         public override void WriteTrace(string message)
         {
-            log4net.ILog log = log4net.LogManager.GetLogger(ConsoleLogger.RetrieveCallerMethod());
+            log4net.ILog log = log4net.LogManager.GetLogger(PrimaryLogger.RetrieveCallerMethod());
             log.Debug(message);
         }
 

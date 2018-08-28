@@ -7,10 +7,16 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
-namespace XDaggerMinerDaemon
+namespace XDaggerMiner.Common
 {
     public class MinerConfig
     {
+        public enum Instancetypes
+        {
+            XDagger = 1,
+            Eth = 2,
+        }
+
         private static readonly string defaultConfigFileName = @"miner-config.json";
 
         private static MinerConfig instance = null;
@@ -30,22 +36,6 @@ namespace XDaggerMinerDaemon
             return instance;
         }
 
-        /*
-        public MinerConfig(MinerConfigFile configFile)
-        {
-            if (configFile == null)
-            {
-                return;
-            }
-
-            this.Version = configFile.version;
-            this.IsFakeRun = configFile.is_fake_run;
-            this.WalletAddress = configFile.wallet_address;
-            this.PoolAddress = configFile.pool_address;
-            this.Device = MinerConfigDevice.CreateFromFile(configFile.device);
-        }
-        */
-
         #region Properties for Config
 
         [JsonProperty(PropertyName = "version")]
@@ -54,8 +44,17 @@ namespace XDaggerMinerDaemon
             get; set;
         }
 
-        [JsonProperty(PropertyName = "instance")]
-        public string InstanceId
+        [JsonProperty(PropertyName = "instance_id")]
+        public int? InstanceId
+        {
+            get; set;
+        }
+
+        /// <summary>
+        /// Instance Type
+        /// </summary>
+        [JsonProperty(PropertyName = "instance_type")]
+        public Instancetypes InstanceType
         {
             get; set;
         }
@@ -66,14 +65,14 @@ namespace XDaggerMinerDaemon
             get; set;
         }
 
-        [JsonProperty(PropertyName = "wallet_address")]
-        public string WalletAddress
+        [JsonProperty(PropertyName = "xdagger")]
+        public XDaggerMinerConfig XDaggerMiner
         {
             get; set;
         }
 
-        [JsonProperty(PropertyName = "pool_address")]
-        public string PoolAddress
+        [JsonProperty(PropertyName = "eth")]
+        public EthMinerConfig EthMiner
         {
             get; set;
         }
@@ -103,36 +102,18 @@ namespace XDaggerMinerDaemon
         {
             var location = System.Reflection.Assembly.GetExecutingAssembly().Location;
             var directoryPath = Path.GetDirectoryName(location);
-            
+
             using (StreamWriter sw = new StreamWriter(Path.Combine(directoryPath, defaultConfigFileName)))
             {
                 string content = JsonConvert.SerializeObject(this, Formatting.Indented);
                 sw.Write(content);
             }
         }
-        
+
     };
 
     public class MinerConfigDevice
     {
-        /*
-        public static MinerConfigDevice CreateFromFile(MinerConfigFile.MinerConfigFileDevice deviceFile)
-        {
-            if (deviceFile == null)
-            {
-                return null;
-            }
-
-            MinerConfigDevice device = new MinerConfigDevice();
-            device.DeviceId = deviceFile.id;
-            device.DisplayName = deviceFile.display_name;
-            device.DeviceVersion = deviceFile.device_version;
-            device.DriverVersion = deviceFile.driver_version;
-
-            return device;
-        }
-        */
-
         public MinerConfigDevice()
         {
 
@@ -145,19 +126,6 @@ namespace XDaggerMinerDaemon
             this.DeviceVersion = deviceVersion;
             this.DriverVersion = driverVersion;
         }
-
-        /*
-        public MinerConfigFile.MinerConfigFileDevice ToConfigFile()
-        {
-            MinerConfigFile.MinerConfigFileDevice deviceFile = new MinerConfigFile.MinerConfigFileDevice();
-            deviceFile.id = this.DeviceId;
-            deviceFile.display_name = this.DisplayName;
-            deviceFile.device_version = this.DeviceVersion;
-            deviceFile.driver_version = this.DriverVersion;
-
-            return deviceFile;
-        }
-        */
 
         private string id = string.Empty;
         private int platformId = 0;
@@ -219,33 +187,33 @@ namespace XDaggerMinerDaemon
         }
     }
 
-    public class MinerConfigFile
+    public class XDaggerMinerConfig
     {
-        public MinerConfigFile()
+        [JsonProperty(PropertyName = "wallet_address")]
+        public string WalletAddress
         {
-
+            get; set;
         }
 
-        public class MinerConfigFileDevice
+        [JsonProperty(PropertyName = "pool_address")]
+        public string PoolAddress
         {
-            public MinerConfigFileDevice()
-            {
+            get; set;
+        }
+    }
 
-            }
+    public class EthMinerConfig
+    {
+        [JsonProperty(PropertyName = "pool_address")]
+        public string PoolAddress
+        {
+            get; set;
+        }
 
-            public string id = string.Empty;
-            public string display_name = string.Empty;
-            public string device_version = string.Empty;
-            public string driver_version = string.Empty;
-        };
-
-
-        public string version = string.Empty;
-        public string pool_address = string.Empty;
-        public string wallet_address = string.Empty;
-        public string machine_name = string.Empty;
-        public string ip_address = string.Empty;
-        public bool is_fake_run = true;
-        public MinerConfigFileDevice device = null;
-    };
+        [JsonProperty(PropertyName = "gpu_type")]
+        public string GPUType
+        {
+            get; set;
+        }
+    }
 }

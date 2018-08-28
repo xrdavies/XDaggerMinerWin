@@ -98,20 +98,13 @@
     <Compile Include="source\Commands\ReportCommand.cs" />
     <Compile Include="source\Commands\ServiceCommand.cs" />
     <Compile Include="source\Commands\TestingCommands.cs" />
-    <Compile Include="source\Common\DaemonCode.cs" />
-    <Compile Include="source\Common\TargetExecutionException.cs" />
-    <Compile Include="source\ConsoleLogger.cs" />
     <Compile Include="source\MainConsole.cs" />
-    <Compile Include="source\MinerConfig.cs" />
     <Compile Include="source\Commands\Outputs\MinerDeviceOutput.cs" />
     <Compile Include="source\Utils\ServiceUtil.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
     <None Include="log4net-daemon.config">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="miner-config.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="packages.config" />
@@ -129,6 +122,10 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Common\Common.csproj">
+      <Project>{9b29bba1-424a-49ab-a125-5f59765267d8}</Project>
+      <Name>Common</Name>
+    </ProjectReference>
     <ProjectReference Include="..\XDaggerMinerRuntimeCLI\XDaggerMinerRuntimeCLI.vcxproj">
       <Project>{f9e05185-5af2-454e-a901-a3326dd59701}</Project>
       <Name>XDaggerMinerRuntimeCLI</Name>

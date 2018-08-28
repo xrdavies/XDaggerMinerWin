@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using XDaggerMiner.Common;
 
-namespace XDaggerMiner.Common
+namespace XDaggerMiner.Common.Contracts
 {
     public class TargetExecutionException : Exception
     {
