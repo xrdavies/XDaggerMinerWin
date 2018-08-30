@@ -8,9 +8,10 @@ using Service = System.ServiceProcess;
 using System.Text;
 using System.Threading.Tasks;
 using XDaggerMinerDaemon.Utils;
+using XDaggerMinerDaemon.Commands.Outputs;
 using XDaggerMiner.Common;
 using XDaggerMiner.Common.Contracts;
-using XDaggerMinerDaemon.Commands.Outputs;
+using XDaggerMinerDaemon.Services;
 
 namespace XDaggerMinerDaemon.Commands
 {
@@ -26,7 +27,9 @@ namespace XDaggerMinerDaemon.Commands
             return "--Service";
         }
 
-        private string serviceInstanceId = null; 
+        private string serviceInstanceId = null;
+
+        private ServiceProvider serviceProvider = null;
 
         private static string ServiceBinaryFullPath
         {
@@ -51,6 +54,7 @@ namespace XDaggerMinerDaemon.Commands
 
         public override CommandResult Execute(string parameter)
         {
+            serviceProvider = ComposeServiceProvider();
             serviceInstanceId = MinerConfig.GetInstance().InstanceId?.ToString();
 
             string operationName = parameter;
@@ -70,7 +74,7 @@ namespace XDaggerMinerDaemon.Commands
         {
             try
             {
-                ServiceUtil.InstallService(ServiceBinaryFullPath, serviceInstanceId);
+                serviceProvider.InstallService(serviceInstanceId);
                 return CommandResult.OKResult();
             }
             catch (TargetExecutionException ex)
@@ -87,7 +91,7 @@ namespace XDaggerMinerDaemon.Commands
         {
             try
             {
-                ServiceUtil.UninstallService(ServiceBinaryFullPath, serviceInstanceId);
+                serviceProvider.UninstallService(serviceInstanceId);
                 return CommandResult.OKResult();
             }
             catch (TargetExecutionException ex)
@@ -104,8 +108,7 @@ namespace XDaggerMinerDaemon.Commands
         {
             try
             {
-                string newInstanceId = ServiceUtil.DetectAvailableInstanceId()?.ToString();
-
+                string newInstanceId = serviceProvider.DetectAvailableInstanceId()?.ToString();
                 return CommandResult.CreateResult(MessageOutput.Create(newInstanceId));
             }
             catch (Service.TimeoutException ex)
@@ -126,7 +129,8 @@ namespace XDaggerMinerDaemon.Commands
         {
             try
             {
-                ServiceUtil.StartService(serviceInstanceId);
+                ServiceInstance instance = serviceProvider.AquaireInstance(serviceInstanceId);
+                instance.Start();
 
                 return CommandResult.OKResult();
             }
@@ -148,7 +152,9 @@ namespace XDaggerMinerDaemon.Commands
         {
             try
             {
-                ServiceUtil.StopService(serviceInstanceId);
+                ServiceInstance instance = serviceProvider.AquaireInstance(serviceInstanceId);
+                instance.Stop();
+
                 return CommandResult.OKResult();
             }
             catch (Service.TimeoutException ex)

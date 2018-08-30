@@ -100,6 +100,10 @@
     <Compile Include="source\Commands\TestingCommands.cs" />
     <Compile Include="source\MainConsole.cs" />
     <Compile Include="source\Commands\Outputs\MinerDeviceOutput.cs" />
+    <Compile Include="source\Services\EthServiceProvider.cs" />
+    <Compile Include="source\Services\ServiceInstance.cs" />
+    <Compile Include="source\Services\ServiceProvider.cs" />
+    <Compile Include="source\Services\XDaggerServiceProvider.cs" />
     <Compile Include="source\Utils\ServiceUtil.cs" />
   </ItemGroup>
   <ItemGroup>

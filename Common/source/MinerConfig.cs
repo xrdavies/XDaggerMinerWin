@@ -11,7 +11,7 @@ namespace XDaggerMiner.Common
 {
     public class MinerConfig
     {
-        public enum Instancetypes
+        public enum InstanceTypes
         {
             XDagger = 1,
             Eth = 2,
@@ -54,7 +54,7 @@ namespace XDaggerMiner.Common
         /// Instance Type
         /// </summary>
         [JsonProperty(PropertyName = "instance_type")]
-        public Instancetypes InstanceType
+        public InstanceTypes? InstanceType
         {
             get; set;
         }

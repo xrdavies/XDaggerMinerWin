@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using XDaggerMiner.Common;
+using XDaggerMinerDaemon.Services;
 
 namespace XDaggerMinerDaemon.Commands
 {
@@ -72,6 +74,19 @@ namespace XDaggerMinerDaemon.Commands
             }
 
             return resultInstanceList;
+        }
+
+        protected static ServiceProvider ComposeServiceProvider()
+        {
+            MinerConfig.InstanceTypes? serviceInstanceType = MinerConfig.GetInstance().InstanceType;
+            if (serviceInstanceType == null || serviceInstanceType.Value == MinerConfig.InstanceTypes.XDagger)
+            {
+                return new XDaggerServiceProvider();
+            }
+            else
+            {
+                return new EthServiceProvider();
+            }
         }
     }
 }

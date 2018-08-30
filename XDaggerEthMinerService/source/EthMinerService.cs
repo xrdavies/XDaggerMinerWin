@@ -17,11 +17,6 @@ using XDaggerMiner.Common.Contracts;
 
 namespace XDaggerEthMinerService
 {
-    public enum MinerState
-    {
-
-    }
-
     public partial class EthMinerService : ServiceBase
     {
         private static readonly string NamedPipeServerNameTemplate = "XDaggerEthMinerPipe_{0}";
@@ -40,11 +35,13 @@ namespace XDaggerEthMinerService
 
         private Task namedPipeServerTask = null;
 
+        private EthMinerStatus ethMinerStatus = null;
+
         public EthMinerService()
         {
             InitializeComponent();
 
-            minerConfig = MinerConfig.ReadFromFile();
+            minerConfig = MinerConfig.GetInstance();
 
             namedPipeServerTask = new Task(() =>
             {
@@ -58,6 +55,8 @@ namespace XDaggerEthMinerService
 
             LaunchEthMiner();
 
+            ethMinerStatus = new EthMinerStatus();
+
             System.Timers.Timer timer = new System.Timers.Timer();
             timer.Interval = timerWorkInterval.TotalMilliseconds;
             timer.Elapsed += new ElapsedEventHandler(this.OnTimerWork);
@@ -68,6 +67,7 @@ namespace XDaggerEthMinerService
                 namedPipeServerTask.Start();
             }
 
+           
         }
 
         private void OnTimerWork(object sender, ElapsedEventArgs e)
@@ -88,7 +88,8 @@ namespace XDaggerEthMinerService
             {
                 string line = reader.ReadLine();
                 logger.Debug(line);
-                //// this.implementEventLog.WriteEntry(line);
+
+                ethMinerStatus.HandleOutputMessage(line);
 
                 Thread.Sleep(30);
             }
@@ -145,12 +146,6 @@ namespace XDaggerEthMinerService
             }
         }
 
-        private void Process_ErrorDataReceived(object sender, DataReceivedEventArgs e)
-        {
-            this.implementEventLog.WriteEntry(e.Data);
-
-        }
-
         protected override void OnStop()
         {
             if (ehtMinerProcess != null && !ehtMinerProcess.HasExited)
@@ -170,7 +165,7 @@ namespace XDaggerEthMinerService
         {
             try
             {
-                using (var server = new NamedPipeServerStream(string.Format(NamedPipeServerNameTemplate, 0)))
+                using (var server = new NamedPipeServerStream(string.Format(NamedPipeServerNameTemplate, minerConfig.InstanceId)))
                 {
                     using (StreamReader reader = new StreamReader(server))
                     {
@@ -228,11 +223,11 @@ namespace XDaggerEthMinerService
         {
             if (command.Equals("status"))
             {
-                return MinerServiceState.Mining;
+                return ethMinerStatus.MinerStatus;
             }
             if (command.Equals("hashrate"))
             {
-                return "0";
+                return ethMinerStatus.HashRate.ToString();
             }
             else
             {

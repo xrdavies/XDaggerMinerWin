@@ -8,6 +8,8 @@ namespace XDaggerMiner.Common.Contracts
 {
     public class MinerServiceState
     {
+        public const string Unknown = "unknown";
+
         public const string Idle = "idle";
 
         public const string Initialzing = "initializing";

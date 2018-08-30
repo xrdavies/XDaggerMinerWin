@@ -8,14 +8,18 @@ using System.Threading.Tasks;
 using XDaggerMiner.Common;
 using XDaggerMiner.Common.Contracts;
 using XDaggerMinerDaemon.Commands.Outputs;
+using XDaggerMinerDaemon.Services;
 using XDaggerMinerDaemon.Utils;
 
 namespace XDaggerMinerDaemon.Commands
 {
     public class ReportCommand : ConsoleCommand
     {
-        private static readonly string NamedPipeServerNameTemplate = "XDaggerMinerPipe_{0}";
-        
+        private ServiceInstance serviceInstance = null;
+
+        /// private static readonly string NamedPipeServerNameTemplate = "XDaggerMinerPipe_{0}";
+        /// private static readonly string NamedPipeServerNameEthTemplate = "XDaggerEthMinerPipe_{0}";
+
         public override string GetShortName()
         {
             return "-r";
@@ -37,16 +41,19 @@ namespace XDaggerMinerDaemon.Commands
         {
             try
             {
-                ReportOutput outputResult = new ReportOutput();
-                outputResult.Status = ReportOutput.StatusEnum.Unknown;
-
+                ServiceProvider serviceProvider = ComposeServiceProvider();
                 string instanceId = MinerConfig.GetInstance().InstanceId?.ToString();
 
-                if (!ServiceUtil.CheckServiceExist(ServiceUtil.GetServiceName(instanceId)))
+                serviceInstance = serviceProvider.AquaireInstance(instanceId);
+
+                ReportOutput outputResult = new ReportOutput();
+                outputResult.Status = ReportOutput.StatusEnum.Unknown;
+                
+                if (!serviceInstance.IsServiceExist())
                 {
                     outputResult.Status = ReportOutput.StatusEnum.NotInstalled;
                 }
-                else if (!ServiceUtil.IsServiceRunning(ServiceUtil.GetServiceName(instanceId)))
+                else if (!serviceInstance.IsServiceRunning())
                 {
                     outputResult.Status = ReportOutput.StatusEnum.Stopped;
                 }
@@ -77,15 +84,12 @@ namespace XDaggerMinerDaemon.Commands
         /// <returns></returns>
         private void QueryServiceStatusByNamedPipe(ReportOutput outputResult)
         {
-            string instanceId = MinerConfig.GetInstance().InstanceId?.ToString();
-
-            string namedPipeName = string.Format(NamedPipeServerNameTemplate, instanceId);
             outputResult.HashRate = -1;
 
             string pipelineOutput = string.Empty;
             try
             {
-                using (var client = new NamedPipeClientStream(namedPipeName))
+                using (var client = new NamedPipeClientStream(serviceInstance.NamedPipeName))
                 {
                     client.Connect(3000);
 
@@ -101,6 +105,7 @@ namespace XDaggerMinerDaemon.Commands
                                 case MinerServiceState.Idle:
                                     break;
                                 case MinerServiceState.Initialzing:
+                                    outputResult.Status = ReportOutput.StatusEnum.Initializing;
                                     break;
                                 case MinerServiceState.Connected:
                                     outputResult.Status = ReportOutput.StatusEnum.Connected;

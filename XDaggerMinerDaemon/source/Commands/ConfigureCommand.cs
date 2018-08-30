@@ -102,7 +102,7 @@ namespace XDaggerMinerDaemon.Commands
                     config.XDaggerMiner = new XDaggerMinerConfig();
                 }
 
-                config.InstanceType = MinerConfig.Instancetypes.XDagger;
+                config.InstanceType = MinerConfig.InstanceTypes.XDagger;
                 config.XDaggerMiner.WalletAddress = wallet;
             }
 
@@ -126,7 +126,7 @@ namespace XDaggerMinerDaemon.Commands
                     config.EthMiner = new EthMinerConfig();
                 }
 
-                config.InstanceType = MinerConfig.Instancetypes.Eth;
+                config.InstanceType = MinerConfig.InstanceTypes.Eth;
                 config.EthMiner.PoolAddress = ethPoolAddress;
             }
 
