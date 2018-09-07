@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 using XDaggerMiner.Common;
 using XDaggerMiner.Common.Contracts;
 using XDaggerMiner.Common.Utils;
+using XDaggerMinerDaemon.Commands.Outputs;
+using XDaggerMinerDaemon.Services;
 using XDaggerMinerDaemon.Utils;
 using XDaggerMinerRuntimeCLI;
 
@@ -130,7 +132,7 @@ namespace XDaggerMinerDaemon.Commands
                 config.EthMiner.PoolAddress = ethPoolAddress;
             }
 
-                if (!string.IsNullOrEmpty(configParameters.InstanceId) && configParameters.AutoDecideInstanceId)
+            if (!string.IsNullOrEmpty(configParameters.InstanceId) && configParameters.AutoDecideInstanceId)
             {
                 throw new TargetExecutionException(DaemonErrorCode.COMMAND_PARAM_ERROR, "Cannot specify InstanceId while AutoDecideInstanceId is used.");
             }
@@ -142,14 +144,29 @@ namespace XDaggerMinerDaemon.Commands
 
             if (configParameters.AutoDecideInstanceId)
             {
-                config.InstanceId = ServiceUtil.DetectAvailableInstanceId();
+                ServiceProvider serviceProvider = ServiceProvider.GetServiceProvider(config.InstanceType ?? MinerConfig.InstanceTypes.XDagger);
+                if (serviceProvider == null)
+                {
+                    config.InstanceId = null;
+                }
+                else
+                {
+                    config.InstanceId = serviceProvider.DetectAvailableInstanceId();
+                }
             }
 
             try
             {
                 config.SaveToFile();
 
-                return CommandResult.OKResult();
+                if (configParameters.AutoDecideInstanceId)
+                {
+                    return CommandResult.CreateResult(ConfigureOutput.Create(config.InstanceId));
+                }
+                else
+                {
+                    return CommandResult.OKResult();
+                }
             }
             catch (Exception ex)
             {

@@ -7,6 +7,7 @@ using System.Reflection;
 using System.ServiceProcess;
 using System.Text;
 using System.Threading.Tasks;
+using XDaggerMiner.Common;
 using XDaggerMiner.Common.Contracts;
 
 namespace XDaggerMinerDaemon.Services
@@ -26,6 +27,24 @@ namespace XDaggerMinerDaemon.Services
         protected virtual string GetNamedPipeNameTemplate()
         {
             return string.Empty;
+        }
+
+        /// <summary>
+        /// ServiceType: 1: XDagger 2: Eth
+        /// </summary>
+        /// <param name="serviceType"></param>
+        /// <returns></returns>
+        public static ServiceProvider GetServiceProvider(MinerConfig.InstanceTypes serviceType)
+        {
+            switch(serviceType)
+            {
+                case MinerConfig.InstanceTypes.XDagger:
+                    return new XDaggerServiceProvider();
+                case MinerConfig.InstanceTypes.Eth:
+                    return new EthServiceProvider();
+                default:
+                    return null;
+            }
         }
 
         ///= @"XDaggerMinerService";
