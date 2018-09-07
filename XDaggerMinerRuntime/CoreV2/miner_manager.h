@@ -110,7 +110,7 @@ namespace XDaggerMinerRuntime
 
 
 		bool _isRunning = false;
-
+		bool _isConnected = false;
 
 
 		// Mining options

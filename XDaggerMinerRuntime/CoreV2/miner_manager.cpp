@@ -158,15 +158,15 @@ void MinerManager::doRealMiningWork(std::string& poolAddress, std::string& walle
 	logTrace(0, "Farm Started.");
 
 	uint32_t iteration = 0;
-	bool isConnected = false;
+	_isConnected = false;
 	_isRunning = true;
 
 	while (_running)
 	{
-		if (!isConnected)
+		if (!_isConnected)
 		{
-			isConnected = _xPool->Connect();
-			if (isConnected)
+			_isConnected = _xPool->Connect();
+			if (_isConnected)
 			{
 				logInformation(0, "Pool Connected. Starting Farm now.");
 
@@ -197,7 +197,7 @@ void MinerManager::doRealMiningWork(std::string& poolAddress, std::string& walle
 
 			_xPool->Disconnect();
 			_farm->Stop();
-			isConnected = false;
+			_isConnected = false;
 			_isRunning = false;
 
 			logInformation(0, "Stoped the iteration.");
@@ -300,10 +300,10 @@ std::string MinerManager::retrieveRunningStatus()
 {
 	if (_xPool == nullptr)
 	{
-		return "stopped";
+		return "idle";
 	}
 
-	if (!_xPool->Interract())
+	if (!_isConnected)
 	{
 		return "disconnected";
 	}
