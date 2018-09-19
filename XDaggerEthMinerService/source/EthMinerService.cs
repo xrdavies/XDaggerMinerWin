@@ -79,8 +79,7 @@ namespace XDaggerEthMinerService
 
             isTimerWorkRunning = true;
             logger.Debug("OnTimerWork");
-            this.implementEventLog.WriteEntry("OnTimerWork");
-
+            
             DateTime timerWorkStartTime = DateTime.UtcNow;
 
             StreamReader reader = ehtMinerProcess.StandardError;
@@ -132,7 +131,11 @@ namespace XDaggerEthMinerService
             startInfo.RedirectStandardError = true;
 
             startInfo.FileName = ethExecutionFileFullPath;
-            startInfo.Arguments = "-G " + minerConfig.EthMiner?.PoolAddress;
+
+            string miningDeviceArgument = DecideDeviceArgument();
+            startInfo.Arguments = string.Format("{0} {1}", miningDeviceArgument, minerConfig.EthMiner?.PoolAddress);
+            implementEventLog.WriteEntry($"Starting Ethminer.exe with arguments:[ {startInfo.Arguments} ]");
+
             ehtMinerProcess.StartInfo = startInfo;
 
             try
@@ -144,6 +147,22 @@ namespace XDaggerEthMinerService
             {
                 throw ex;
             }
+        }
+
+        private string DecideDeviceArgument()
+        {
+            string deviceName = minerConfig.Device?.DisplayName;
+            if (string.IsNullOrEmpty(deviceName))
+            {
+                return "-X";
+            }
+
+            if (deviceName.ToLower().Contains("nvidia"))
+            {
+                return "-U";
+            }
+
+            return "-G";
         }
 
         protected override void OnStop()
@@ -228,6 +247,10 @@ namespace XDaggerEthMinerService
             if (command.Equals("hashrate"))
             {
                 return ethMinerStatus.HashRate.ToString();
+            }
+            if (command.Equals("details"))
+            {
+                return ethMinerStatus.Details;
             }
             else
             {

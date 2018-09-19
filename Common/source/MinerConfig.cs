@@ -152,6 +152,7 @@ namespace XDaggerMiner.Common
             }
         }
 
+        [JsonProperty(PropertyName = "platform_id")]
         public int PlatformId
         {
             get
@@ -160,6 +161,7 @@ namespace XDaggerMiner.Common
             }
         }
 
+        [JsonProperty(PropertyName = "device_id")]
         public int DeviceId
         {
             get

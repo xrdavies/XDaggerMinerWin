@@ -32,7 +32,7 @@ namespace XDaggerEthMinerService
         {
             get
             {
-                if (HasExpired())
+                if (minerStatus != MinerServiceState.Error && HasExpired())
                 {
                     return MinerServiceState.Unknown;
                 }
@@ -65,8 +65,33 @@ namespace XDaggerEthMinerService
             }
         }
 
+        private string details = string.Empty;
+        public string Details
+        {
+            get
+            {
+                if (HasExpired())
+                {
+                    return string.Empty;
+                }
+
+                return details;
+            }
+            set
+            {
+                this.LastUpdatedTime = DateTime.UtcNow;
+                this.details = value;
+            }
+        }
+
         public void HandleOutputMessage(string messageLine)
         {
+            if (MinerStatus == MinerServiceState.Error)
+            {
+                // Ignore other output when there is error
+                return;
+            }
+
             if (messageLine.Contains("Unknown URI scheme unspecified"))
             {
                 MinerStatus = MinerServiceState.Idle;
@@ -84,6 +109,14 @@ namespace XDaggerEthMinerService
             if (messageLine.Contains("Connected to "))
             {
                 MinerStatus = MinerServiceState.Connected;
+                HashRate = 0;
+                return;
+            }
+
+            if (messageLine.Contains("CL_INVALID_BUFFER_SIZE"))
+            {
+                MinerStatus = MinerServiceState.Error;
+                Details = "CL_INVALID_BUFFER_SIZE";
                 HashRate = 0;
                 return;
             }

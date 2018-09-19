@@ -84,7 +84,7 @@ namespace XDaggerMinerDaemon.Commands
         /// <returns></returns>
         private void QueryServiceStatusByNamedPipe(ReportOutput outputResult)
         {
-            outputResult.HashRate = -1;
+            outputResult.HashRate = 0;
 
             string pipelineOutput = string.Empty;
             try
@@ -99,7 +99,7 @@ namespace XDaggerMinerDaemon.Commands
                         {
                             string status = ReadFromNamedPipe(reader, writer, "status");
                             string hashRateStr = ReadFromNamedPipe(reader, writer, "hashrate");
-                            
+
                             switch (status)
                             {
                                 case MinerServiceState.Idle:
@@ -112,6 +112,10 @@ namespace XDaggerMinerDaemon.Commands
                                     break;
                                 case MinerServiceState.Disconnected:
                                     outputResult.Status = ReportOutput.StatusEnum.Disconnected;
+                                    break;
+                                case MinerServiceState.Error:
+                                    outputResult.Status = ReportOutput.StatusEnum.Error;
+                                    outputResult.Details = ReadFromNamedPipe(reader, writer, "details");
                                     break;
                                 case MinerServiceState.Mining:
                                     outputResult.Status = ReportOutput.StatusEnum.Mining;

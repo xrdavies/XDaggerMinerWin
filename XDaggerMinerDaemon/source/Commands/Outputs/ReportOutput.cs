@@ -20,9 +20,15 @@ namespace XDaggerMinerDaemon.Commands.Outputs
             Disconnected = 40,
             Connected = 50,
             Mining = 60,
+            Error = 99,
         }
 
         public StatusEnum Status
+        {
+            get; set;
+        }
+
+        public string Details
         {
             get; set;
         }

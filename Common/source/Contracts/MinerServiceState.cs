@@ -20,6 +20,6 @@ namespace XDaggerMiner.Common.Contracts
 
         public const string Mining = "mining";
 
-        
+        public const string Error = "error";
     }
 }
