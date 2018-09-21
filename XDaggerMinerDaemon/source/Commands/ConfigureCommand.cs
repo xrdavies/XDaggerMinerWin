@@ -79,7 +79,8 @@ namespace XDaggerMinerDaemon.Commands
                 }
             }
 
-            if (!string.IsNullOrEmpty(configParameters.XDaggerWallet) && !string.IsNullOrEmpty(configParameters.EthPoolAddress))
+            if ((!string.IsNullOrEmpty(configParameters.XDaggerWallet) || !string.IsNullOrEmpty(configParameters.XDaggerPoolAddress))
+                && !string.IsNullOrEmpty(configParameters.EthPoolAddress))
             {
                 throw new TargetExecutionException(DaemonErrorCode.CONFIG_ONLY_ONE_INSTANCE_TYPE_ALLOWED, "Only one type of miner instance is allowed.");
             }
@@ -107,6 +108,31 @@ namespace XDaggerMinerDaemon.Commands
                 config.InstanceType = MinerConfig.InstanceTypes.XDagger;
                 config.XDaggerMiner.WalletAddress = wallet;
             }
+
+            if (!string.IsNullOrEmpty(configParameters.XDaggerPoolAddress))
+            {
+                string poolAddress = configParameters.XDaggerPoolAddress.Trim();
+
+                // TODO: Should validate the Wallet address first
+                if (false)
+                {
+                    throw new TargetExecutionException(DaemonErrorCode.CONFIG_WALLET_FORMET_ERROR, string.Format("Wallet format is not correct. Wallet=[{0}]", configParameters.XDaggerWallet));
+                }
+
+                if (false)
+                {
+                    throw new TargetExecutionException(DaemonErrorCode.CONFIG_WALLET_NOT_FOUND, string.Format("Wallet cannot be found. Wallet=[{0}]", configParameters.XDaggerWallet));
+                }
+
+                if (config.XDaggerMiner == null)
+                {
+                    config.XDaggerMiner = new XDaggerMinerConfig();
+                }
+
+                config.InstanceType = MinerConfig.InstanceTypes.XDagger;
+                config.XDaggerMiner.PoolAddress = poolAddress;
+            }
+
 
             if (!string.IsNullOrEmpty(configParameters.EthPoolAddress))
             {
@@ -190,6 +216,8 @@ namespace XDaggerMinerDaemon.Commands
         /// The Eth Miner Pool address
         /// </summary>
         public string EthPoolAddress;
+
+        public string XDaggerPoolAddress;
 
         public bool AutoDecideInstanceId = false;
     }
