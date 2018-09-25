@@ -157,7 +157,7 @@ namespace XDaggerEthMinerService
                 return "-X";
             }
 
-            if (deviceName.ToLower().Contains("nvidia"))
+            if (deviceName.ToLower().Contains("nvidia") || deviceName.ToLower().Contains("geforce"))
             {
                 return "-U";
             }
