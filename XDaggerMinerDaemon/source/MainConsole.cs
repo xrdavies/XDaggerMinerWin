@@ -29,8 +29,6 @@ namespace XDaggerMinerDaemon
             rawArguments = args;
 
             minerManager = new MinerManager();
-            logger = new PrimaryLogger();
-            minerManager.SetLogger(logger);
         }
 
         public CommandResult Execute()

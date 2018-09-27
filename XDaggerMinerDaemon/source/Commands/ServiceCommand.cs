@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using XDaggerMinerDaemon.Utils;
 using XDaggerMinerDaemon.Commands.Outputs;
 using XDaggerMiner.Common;
+using XDaggerMiner.Common.Utils;
 using XDaggerMiner.Common.Contracts;
 using XDaggerMinerDaemon.Services;
 
@@ -30,6 +31,9 @@ namespace XDaggerMinerDaemon.Commands
         private string serviceInstanceId = null;
 
         private ServiceProvider serviceProvider = null;
+
+        private MinerConfig minerConfig = null;
+
 
         private static string ServiceBinaryFullPath
         {
@@ -54,9 +58,14 @@ namespace XDaggerMinerDaemon.Commands
 
         public override CommandResult Execute(string parameter)
         {
-            serviceProvider = ComposeServiceProvider();
-            serviceInstanceId = MinerConfig.GetInstance().InstanceId?.ToString();
+            logger.Trace("ServiceCommand executes with parameter: " + parameter);
 
+            minerConfig = MinerConfig.GetInstance();
+            serviceProvider = ComposeServiceProvider(minerConfig.InstanceType);
+            serviceInstanceId = minerConfig.InstanceId?.ToString();
+
+            logger.Trace($"InstanceType: {minerConfig.InstanceType}. InstanceId: {serviceInstanceId}" );
+            
             string operationName = parameter;
             switch (operationName)
             {
@@ -74,6 +83,8 @@ namespace XDaggerMinerDaemon.Commands
         {
             try
             {
+                CheckAndCleanupPreviousService();
+
                 serviceProvider.InstallService(serviceInstanceId);
                 return CommandResult.OKResult();
             }
@@ -92,6 +103,18 @@ namespace XDaggerMinerDaemon.Commands
             try
             {
                 serviceProvider.UninstallService(serviceInstanceId);
+
+                // If uninstall is successful, update the config.
+                if (minerConfig.UpdatedInstanceType != null)
+                {
+                    minerConfig.InstanceType = minerConfig.UpdatedInstanceType;
+                    minerConfig.InstanceId = minerConfig.UpdatedInstanceId;
+                    minerConfig.UpdatedInstanceType = null;
+                    minerConfig.UpdatedInstanceId = null;
+
+                    minerConfig.SaveToFile();
+                }
+
                 return CommandResult.OKResult();
             }
             catch (TargetExecutionException ex)
@@ -127,10 +150,23 @@ namespace XDaggerMinerDaemon.Commands
 
         private CommandResult Start()
         {
+            logger.Trace("ServiceCommand: Start()");
             try
             {
-                ServiceInstance instance = serviceProvider.AquaireInstance(serviceInstanceId);
-                instance.Start();
+                if (CheckAndCleanupPreviousService())
+                {
+                    // Reload the configs and install service first
+                    serviceProvider = ComposeServiceProvider(minerConfig.InstanceType);
+                    serviceInstanceId = minerConfig.InstanceId?.ToString();
+
+                    ServiceInstance instance = serviceProvider.InstallService(serviceInstanceId);
+                    instance.Start();
+                }
+                else
+                {
+                    ServiceInstance instance = serviceProvider.AquaireInstance(serviceInstanceId);
+                    instance.Start();
+                }
 
                 return CommandResult.OKResult();
             }
@@ -169,6 +205,40 @@ namespace XDaggerMinerDaemon.Commands
             {
                 throw new TargetExecutionException(DaemonErrorCode.UNKNOWN_ERROR, ex);
             }
+        }
+
+        private bool CheckAndCleanupPreviousService()
+        {
+            if (minerConfig.UpdatedInstanceType == null)
+            {
+                // Nothing to be updated.
+                logger.Trace("UpdatedInstanceType is null, no need to update.");
+                return false;
+            }
+
+            // Uninstall the previous service instance
+            MinerConfig.InstanceTypes instanceType = minerConfig.InstanceType ?? MinerConfig.InstanceTypes.XDagger;
+            string instanceId = minerConfig.InstanceId?.ToString();
+
+            logger.Trace($"Try to find service with InstanceType=[{instanceType}] InstanceId=[{instanceId}].");
+            ServiceProvider serviceProvider = ComposeServiceProvider(minerConfig.InstanceType);
+            ServiceInstance serviceInstance = serviceProvider.AquaireInstance(minerConfig.InstanceId?.ToString());
+            if (serviceInstance.IsServiceExist())
+            {
+                logger.Trace("IsServiceExist is true, try uninstalling the previous service.");
+                serviceProvider.UninstallService(instanceId);
+            }
+
+            // If the uninsallation is successful, update the config file
+            minerConfig.InstanceType = minerConfig.UpdatedInstanceType;
+            minerConfig.InstanceId = minerConfig.UpdatedInstanceId;
+            minerConfig.UpdatedInstanceType = null;
+            minerConfig.UpdatedInstanceId = null;
+
+            minerConfig.SaveToFile();
+            logger.Trace("Updated miner config file.");
+
+            return true;
         }
     }
 }

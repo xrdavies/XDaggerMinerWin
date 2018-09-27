@@ -35,8 +35,6 @@ namespace XDaggerMinerDaemon.Commands
         {
             // List all devices
             MinerManager minerManager = new MinerManager();
-            PrimaryLogger logger = new PrimaryLogger();
-            minerManager.SetLogger(logger);
 
             try
             {

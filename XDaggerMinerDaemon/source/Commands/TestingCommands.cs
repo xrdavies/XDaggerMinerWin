@@ -22,13 +22,13 @@ namespace XDaggerMinerDaemon.Commands
 
         private MinerManager minerManager = null;
 
-        private PrimaryLogger minerLog = null;
+        private Logger minerLog = null;
 
         public override CommandResult Execute(string parameter)
         {
-            minerLog = new PrimaryLogger();
+            minerLog = new Logger();
             minerManager = new MinerManager(false);
-            minerManager.SetLogger(minerLog);
+            //// minerManager.SetLogger(minerLog);
 
             System.Timers.Timer timer = new System.Timers.Timer();
             timer.Interval = 1000;

@@ -14,45 +14,58 @@ namespace XDaggerMiner.Common.Utils
     /// <summary>
     /// 
     /// </summary>
-    public class PrimaryLogger : LoggerBase
+    public class Logger
     {
+        public enum LogLevel
+        {
+            Trace,
+            Information,
+            Warning,
+            Error,
+            Fatal,
+        }
+
         /// <summary>
         /// 
         /// </summary>
-        private static PrimaryLogger instance = null;
+        private static Logger instance = null;
 
-        public static PrimaryLogger GetInstance()
+        public static Logger GetInstance()
         {
             if (instance == null)
             {
-                instance = new PrimaryLogger();
+                instance = new Logger();
             }
 
             return instance;
         }
 
-        public override void WriteLog(int level, int eventId, string message)
+        public void WriteLog(LogLevel level, int eventId, string message)
         {
             string formattedMessage = string.Format("[{0}]{1}", eventId, message);
 
-            log4net.ILog log = log4net.LogManager.GetLogger(PrimaryLogger.RetrieveCallerMethod());
+            log4net.ILog log = log4net.LogManager.GetLogger(Logger.RetrieveCallerMethod());
             switch (level)
             {
-                case 0:
+                case LogLevel.Trace:
                     // Trace
                     log.Debug(formattedMessage);
                     break;
-                case 1:
+                case LogLevel.Error:
                     // Error
                     log.Error(formattedMessage);
                     break;
-                case 2:
+                case LogLevel.Warning:
                     // Warning
                     log.Warn(formattedMessage);
                     break;
-                case 3:
+                case LogLevel.Information:
                     // Information
                     log.Info(formattedMessage);
+                    break;
+                case LogLevel.Fatal:
+                    // Information
+                    log.Fatal(formattedMessage);
                     break;
                 default:
                     log.Fatal(formattedMessage);
@@ -60,10 +73,24 @@ namespace XDaggerMiner.Common.Utils
             }
         }
 
-        public override void WriteTrace(string message)
+        public void Trace(string message)
         {
-            log4net.ILog log = log4net.LogManager.GetLogger(PrimaryLogger.RetrieveCallerMethod());
-            log.Debug(message);
+            WriteLog(LogLevel.Trace, 0, message);
+        }
+
+        public void Warning(string message)
+        {
+            WriteLog(LogLevel.Warning, 0, message);
+        }
+
+        public void Error(string message)
+        {
+            WriteLog(LogLevel.Error, 0, message);
+        }
+
+        public void Information(string message)
+        {
+            WriteLog(LogLevel.Information, 0, message);
         }
 
         private static string RetrieveCallerMethod()
@@ -71,7 +98,7 @@ namespace XDaggerMiner.Common.Utils
             int stackTraceIndex = 1;
             string fullMethodName = string.Empty;
 
-            while (true)
+            while (stackTraceIndex < 256)
             {
                 try
                 {

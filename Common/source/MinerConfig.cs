@@ -59,6 +59,21 @@ namespace XDaggerMiner.Common
             get; set;
         }
 
+        [JsonProperty(PropertyName = "updated_instance_id")]
+        public int? UpdatedInstanceId
+        {
+            get; set;
+        }
+
+        /// <summary>
+        /// Instance Type
+        /// </summary>
+        [JsonProperty(PropertyName = "updated_instance_type")]
+        public InstanceTypes? UpdatedInstanceType
+        {
+            get; set;
+        }
+
         [JsonProperty(PropertyName = "is_fake_run")]
         public bool IsFakeRun
         {

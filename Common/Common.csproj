@@ -53,7 +53,7 @@
     <Compile Include="source\Contracts\MinerServiceState.cs" />
     <Compile Include="source\Contracts\TargetExecutionException.cs" />
     <Compile Include="source\MinerConfig.cs" />
-    <Compile Include="source\Utils\PrimaryLogger.cs" />
+    <Compile Include="source\Utils\Logger.cs" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>

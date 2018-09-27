@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using XDaggerMiner.Common;
+using XDaggerMiner.Common.Utils;
 using XDaggerMinerDaemon.Services;
 
 namespace XDaggerMinerDaemon.Commands
@@ -17,6 +18,8 @@ namespace XDaggerMinerDaemon.Commands
         public abstract CommandInstance GenerateInstance(string[] arguments, ref int nextIndex);
 
         public abstract CommandResult Execute(string parameter);
+
+        protected Logger logger = Logger.GetInstance();
 
         public virtual void Validate()
         {
@@ -47,6 +50,9 @@ namespace XDaggerMinerDaemon.Commands
             {
                 if (command.IsMatchName(arguments[nextIndex]))
                 {
+                    Logger.GetInstance().Trace("ReadCommand Found matched ConsoleCommand: " + command.GetLongName());
+
+
                     nextIndex++;
                     CommandInstance instance = command.GenerateInstance(arguments, ref nextIndex);
                     return instance;
@@ -54,7 +60,6 @@ namespace XDaggerMinerDaemon.Commands
             }
 
             return null;
-
         }
 
         public static List<CommandInstance> ParseCommands(string[] arguments)
@@ -76,9 +81,8 @@ namespace XDaggerMinerDaemon.Commands
             return resultInstanceList;
         }
 
-        protected static ServiceProvider ComposeServiceProvider()
+        protected static ServiceProvider ComposeServiceProvider(MinerConfig.InstanceTypes? serviceInstanceType)
         {
-            MinerConfig.InstanceTypes? serviceInstanceType = MinerConfig.GetInstance().InstanceType;
             if (serviceInstanceType == null || serviceInstanceType.Value == MinerConfig.InstanceTypes.XDagger)
             {
                 return new XDaggerServiceProvider();
