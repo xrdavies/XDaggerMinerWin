@@ -11,6 +11,9 @@ namespace XDaggerMinerDaemon.Commands
 {
     public abstract class ConsoleCommand
     {
+        protected static readonly int IntermediateFailureRetryTimes = 5;
+        protected static readonly int IntermediateFailureRetryPeriod = 2000;
+
         public abstract string GetShortName();
 
         public abstract string GetLongName();

@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using XDaggerMiner.Common;
 using XDaggerMiner.Common.Contracts;
@@ -195,25 +196,35 @@ namespace XDaggerMinerDaemon.Commands
                 config.UpdatedInstanceId = null;
                 config.UpdatedInstanceType = null;
             }
-            
+
 
             // Save all of the changes into config file
-            try
+            int retryTimes = 0;
+            while (true)
             {
-                config.SaveToFile();
+                try
+                {
+                    config.SaveToFile();
 
-                if (isInstanceUpdated)
-                {
-                    return CommandResult.CreateResult(ConfigureOutput.Create(config.UpdatedInstanceId ?? config.InstanceId));
+                    if (isInstanceUpdated)
+                    {
+                        return CommandResult.CreateResult(ConfigureOutput.Create(config.UpdatedInstanceId ?? config.InstanceId));
+                    }
+                    else
+                    {
+                        return CommandResult.OKResult();
+                    }
                 }
-                else
+                catch (Exception ex)
                 {
-                    return CommandResult.OKResult();
+                    if (retryTimes++ < IntermediateFailureRetryTimes)
+                    {
+                        Thread.Sleep(IntermediateFailureRetryPeriod);
+                        continue;
+                    }
+
+                    throw new TargetExecutionException(DaemonErrorCode.UNKNOWN_ERROR, ex.Message);
                 }
-            }
-            catch (Exception ex)
-            {
-                throw new TargetExecutionException(DaemonErrorCode.UNKNOWN_ERROR, ex.Message);
             }
         }
 

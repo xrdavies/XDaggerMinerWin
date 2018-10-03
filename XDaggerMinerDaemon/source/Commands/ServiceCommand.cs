@@ -165,7 +165,10 @@ namespace XDaggerMinerDaemon.Commands
                 else
                 {
                     ServiceInstance instance = serviceProvider.AquaireInstance(serviceInstanceId);
-                    instance.Start();
+                    if (!instance.IsServiceRunning())
+                    {
+                        instance.Start();
+                    }
                 }
 
                 return CommandResult.OKResult();
@@ -189,7 +192,10 @@ namespace XDaggerMinerDaemon.Commands
             try
             {
                 ServiceInstance instance = serviceProvider.AquaireInstance(serviceInstanceId);
-                instance.Stop();
+                if (instance.IsServiceRunning())
+                {
+                    instance.Stop();
+                }
 
                 return CommandResult.OKResult();
             }
