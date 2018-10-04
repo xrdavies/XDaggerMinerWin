@@ -60,7 +60,7 @@ namespace XDaggerMinerDaemon.Commands
 
             MinerConfig config = MinerConfig.ReadFromFile();
 
-            if (!string.IsNullOrEmpty(configParameters.DeviceId))
+            if (!string.IsNullOrEmpty(configParameters.DeviceId) || !string.IsNullOrEmpty(configParameters.DeviceName))
             {
                 MinerManager minerManager = new MinerManager();
 
@@ -68,7 +68,7 @@ namespace XDaggerMinerDaemon.Commands
                 bool deviceFound = false;
                 foreach(MinerDevice device in deviceList)
                 {
-                    if (device.IsMatchId(configParameters.DeviceId))
+                    if (device.IsMatchId(configParameters.DeviceId) || string.Equals(device.GetDisplayName(), configParameters.DeviceName))
                     {
                         config.Device = new MinerConfigDevice(device.GetDeviceId(), device.GetDisplayName(), device.GetDeviceVersion(), device.GetDriverVersion());
                         deviceFound = true;
@@ -78,7 +78,9 @@ namespace XDaggerMinerDaemon.Commands
                 
                 if (!deviceFound)
                 {
-                    throw new TargetExecutionException(DaemonErrorCode.CONFIG_DEVICE_NOT_FOUND, string.Format("Did not find the device matches DeviceId=[{0}]", configParameters.DeviceId));
+                    throw new TargetExecutionException(DaemonErrorCode.CONFIG_DEVICE_NOT_FOUND, string.Format("Did not find the device matches DeviceId=[{0}] or DeviceName=[{1}]", 
+                        configParameters.DeviceId,
+                        configParameters.DeviceName));
                 }
             }
 
@@ -258,6 +260,8 @@ namespace XDaggerMinerDaemon.Commands
         public string InstanceId;
 
         public string DeviceId;
+
+        public string DeviceName;
 
         /// <summary>
         /// The XDagger Wallet address of the customer
