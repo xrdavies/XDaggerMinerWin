@@ -90,12 +90,12 @@ namespace XDaggerMinerDaemon.Commands
                 throw new TargetExecutionException(DaemonErrorCode.CONFIG_ONLY_ONE_INSTANCE_TYPE_ALLOWED, "Only one type of miner instance is allowed.");
             }
 
-            if (!string.IsNullOrEmpty(configParameters.InstanceId) && configParameters.AutoDecideInstanceId)
+            if (configParameters.InstanceId.HasValue && configParameters.AutoDecideInstanceId)
             {
                 throw new TargetExecutionException(DaemonErrorCode.COMMAND_PARAM_ERROR, "Cannot specify InstanceId while AutoDecideInstanceId is used.");
             }
             
-            InstanceTypes proposedInstanceType = InstanceTypes.XDagger;
+            InstanceTypes? proposedInstanceType = null;
 
             if (!string.IsNullOrEmpty(configParameters.XDaggerWallet))
             {
@@ -169,36 +169,41 @@ namespace XDaggerMinerDaemon.Commands
                 config.EthMiner.PoolAddress = ethPoolAddress;
             }
 
-            ServiceProvider currentServiceProvider = config.InstanceType != null ? ServiceProvider.GetServiceProvider(config.InstanceType.Value) : null;
-            ServiceInstance currentServiceInstance = currentServiceProvider?.AquaireInstance(config.InstanceId?.ToString());
+            ServiceProvider currentServiceProvider = ServiceProvider.GetServiceProvider(config.InstanceType);
+            ServiceInstance currentServiceInstance = currentServiceProvider?.AquaireInstance(config.InstanceId);
 
             // Check the change of instance Type, if the service is already installed, put the new instance type into updated_instance_type, and detect new updated_instance_id
             if (currentServiceInstance != null && currentServiceInstance.IsServiceExist())
             {
                 // Put the type into updated_instance_type
-                if (proposedInstanceType != config.InstanceType)
+                if(proposedInstanceType == null)
+                {
+                    if (config.UpdatedInstanceType != null && configParameters.InstanceId != null)
+                    {
+                        config.UpdatedInstanceId = configParameters.InstanceId;
+                    }
+                }
+                else if (proposedInstanceType != config.InstanceType)
                 {
                     isInstanceUpdated = true;
                     config.UpdatedInstanceType = proposedInstanceType;
-                    config.UpdatedInstanceId = DecideInstanceId(configParameters, proposedInstanceType, true);
+                    config.UpdatedInstanceId = DecideInstanceId(configParameters, proposedInstanceType.Value, true);
                 }
-                
             }
-            else
+            else if (proposedInstanceType != null)
             {
-                if (configParameters.AutoDecideInstanceId || (config.InstanceType != null && proposedInstanceType != config.InstanceType))
+                if (configParameters.AutoDecideInstanceId || (config.InstanceType != InstanceTypes.Unset && proposedInstanceType != config.InstanceType))
                 {
                     isInstanceUpdated = true;
                 }
 
-                config.InstanceType = proposedInstanceType;
-                config.InstanceId = DecideInstanceId(configParameters, proposedInstanceType, false) ?? config.InstanceId;
+                config.InstanceType = proposedInstanceType.Value;
+                config.InstanceId = DecideInstanceId(configParameters, proposedInstanceType.Value, false) ?? config.InstanceId;
                 
                 // Clear the updated ones
                 config.UpdatedInstanceId = null;
                 config.UpdatedInstanceType = null;
             }
-
 
             // Save all of the changes into config file
             int retryTimes = 0;
@@ -233,9 +238,9 @@ namespace XDaggerMinerDaemon.Commands
         private int? DecideInstanceId(ConfigureParameter parameter, InstanceTypes instanceType, bool force)
         {
             // Decide the instanceId
-            if (!string.IsNullOrEmpty(parameter.InstanceId))
+            if (parameter.InstanceId.HasValue)
             {
-                return Int32.Parse(parameter.InstanceId.Trim());
+                return parameter.InstanceId.Value;
             }
 
             if (parameter.AutoDecideInstanceId || force)
@@ -257,7 +262,7 @@ namespace XDaggerMinerDaemon.Commands
 
     public class ConfigureParameter
     {
-        public string InstanceId;
+        public int? InstanceId;
 
         public string DeviceId;
 
@@ -277,5 +282,4 @@ namespace XDaggerMinerDaemon.Commands
 
         public bool AutoDecideInstanceId = false;
     }
-
 }
