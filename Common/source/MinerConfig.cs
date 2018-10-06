@@ -46,7 +46,7 @@ namespace XDaggerMiner.Common
         }
 
         [JsonProperty(PropertyName = "instance_id")]
-        public int? InstanceId
+        public int InstanceId
         {
             get; set;
         }
@@ -55,7 +55,7 @@ namespace XDaggerMiner.Common
         /// Instance Type
         /// </summary>
         [JsonProperty(PropertyName = "instance_type")]
-        public InstanceTypes? InstanceType
+        public InstanceTypes InstanceType
         {
             get; set;
         }

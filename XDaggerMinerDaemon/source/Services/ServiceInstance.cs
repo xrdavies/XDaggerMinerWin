@@ -18,7 +18,7 @@ namespace XDaggerMinerDaemon.Services
             get; private set;
         }
 
-        public string InstanceId
+        public int InstanceId
         {
             get; private set;
         }
@@ -28,7 +28,7 @@ namespace XDaggerMinerDaemon.Services
             get; set;
         }
 
-        public ServiceInstance(string serviceName, string instanceId)
+        public ServiceInstance(string serviceName, int instanceId)
         {
             this.ServiceName = serviceName;
             this.InstanceId = instanceId;
@@ -85,6 +85,5 @@ namespace XDaggerMinerDaemon.Services
             ServiceController[] services = ServiceController.GetServices();
             return (services.FirstOrDefault(s => s.ServiceName == serviceName) != null);
         }
-
     }
 }

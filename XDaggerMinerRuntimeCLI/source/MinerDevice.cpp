@@ -39,5 +39,10 @@ String ^ MinerDevice::GetDriverVersion()
 
 bool MinerDevice::IsMatchId(String ^ deviceId)
 {
+	if (deviceId == nullptr)
+	{
+		return false;
+	}
+
 	return this->deviceId->Equals(deviceId, System::StringComparison::InvariantCultureIgnoreCase);
 }

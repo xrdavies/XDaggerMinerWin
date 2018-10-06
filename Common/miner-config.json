@@ -1,6 +1,7 @@
 {
     "version": "0.2.1004.0",
     "instance_type": 0,
+    "instance_id":  0,
     "is_fake_run": false,
     "xdagger": {
         "pool_address": "",

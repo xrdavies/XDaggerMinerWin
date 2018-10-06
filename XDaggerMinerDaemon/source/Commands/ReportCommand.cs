@@ -42,7 +42,7 @@ namespace XDaggerMinerDaemon.Commands
             try
             {
                 ServiceProvider serviceProvider = ComposeServiceProvider(MinerConfig.GetInstance().InstanceType);
-                string instanceId = MinerConfig.GetInstance().InstanceId?.ToString();
+                int instanceId = MinerConfig.GetInstance().InstanceId;
 
                 serviceInstance = serviceProvider.AquaireInstance(instanceId);
 

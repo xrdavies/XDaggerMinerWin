@@ -22,6 +22,5 @@ namespace XDaggerMinerDaemon.Services
         {
             return "XDaggerEthMinerPipe_{0}";
         }
-
     }
 }

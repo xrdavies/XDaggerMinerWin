@@ -54,9 +54,9 @@ namespace XDaggerMinerDaemon.Services
         /// 
         /// </summary>
         /// <returns></returns>
-        public string GetServiceName(string instanceId)
+        public string GetServiceName(int instanceId)
         {
-            return (string.IsNullOrEmpty(instanceId) ? GetServiceNameBase() : string.Format("{0}_{1}", GetServiceNameBase(), instanceId));
+            return (instanceId == 0) ? GetServiceNameBase() : string.Format("{0}_{1}", GetServiceNameBase(), instanceId);
         }
 
         /// <summary>
@@ -73,9 +73,9 @@ namespace XDaggerMinerDaemon.Services
         /// <summary>
         /// 
         /// </summary>
-        public ServiceInstance InstallService(string instanceId)
+        public ServiceInstance InstallService(int instanceId)
         {
-            if (!string.IsNullOrEmpty(instanceId))
+            if (instanceId == 0)
             {
                 ManagedInstallerClass.InstallHelper(new string[] { "/instance=" + instanceId, ServiceBinaryFullPath });
             }
@@ -87,9 +87,9 @@ namespace XDaggerMinerDaemon.Services
             return AquaireInstance(instanceId);
         }
 
-        public void UninstallService(string instanceId)
+        public void UninstallService(int instanceId)
         {
-            if (!string.IsNullOrEmpty(instanceId))
+            if (instanceId == 0)
             {
                 ManagedInstallerClass.InstallHelper(new string[] { "/u", "/instance=" + instanceId, ServiceBinaryFullPath });
             }
@@ -99,7 +99,7 @@ namespace XDaggerMinerDaemon.Services
             }
         }
 
-        public ServiceInstance AquaireInstance(string instanceId)
+        public ServiceInstance AquaireInstance(int instanceId)
         {
             ServiceInstance instance = new ServiceInstance(GetServiceName(instanceId), instanceId);
             instance.NamedPipeName = string.Format(GetNamedPipeNameTemplate(), instanceId);
@@ -107,22 +107,15 @@ namespace XDaggerMinerDaemon.Services
             return instance;
         }
 
-        public int? DetectAvailableInstanceId()
+        public int DetectAvailableInstanceId()
         {
-            if (!ServiceInstance.CheckServiceExist(GetServiceNameBase()))
+            int instanceId = 0;
+            while (ServiceInstance.CheckServiceExist(GetServiceName(instanceId)))
             {
-                return null;
+                instanceId++;
             }
 
-            int instanceNumber = 1;
-
-            while (ServiceInstance.CheckServiceExist(GetServiceName(instanceNumber.ToString())))
-            {
-                instanceNumber++;
-            }
-
-            return instanceNumber;
+            return instanceId;
         }
-
     }
 }
