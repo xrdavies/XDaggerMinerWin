@@ -1,0 +1,9 @@
+D:\GitRoot\xdagger\XDaggerMinerWin\bin\Release\Test\Microsoft.VisualStudio.TestPlatform.MSTest.TestAdapter.dll
+D:\GitRoot\xdagger\XDaggerMinerWin\bin\Release\Test\Microsoft.VisualStudio.TestPlatform.MSTestAdapter.PlatformServices.Interface.dll
+D:\GitRoot\xdagger\XDaggerMinerWin\bin\Release\Test\Microsoft.VisualStudio.TestPlatform.MSTestAdapter.PlatformServices.dll
+D:\GitRoot\xdagger\XDaggerMinerWin\bin\Release\Test\XDaggerMinerDaemonTest.dll
+D:\GitRoot\xdagger\XDaggerMinerWin\bin\Release\Test\XDaggerMinerDaemonTest.pdb
+D:\GitRoot\xdagger\XDaggerMinerWin\XDaggerMinerDaemonTest\obj\Release\XDaggerMinerDaemonTest.csproj.CoreCompileInputs.cache
+D:\GitRoot\xdagger\XDaggerMinerWin\XDaggerMinerDaemonTest\obj\Release\XDaggerMinerDaemonTest.csproj.CopyComplete
+D:\GitRoot\xdagger\XDaggerMinerWin\XDaggerMinerDaemonTest\obj\Release\XDaggerMinerDaemonTest.dll
+D:\GitRoot\xdagger\XDaggerMinerWin\XDaggerMinerDaemonTest\obj\Release\XDaggerMinerDaemonTest.pdb
