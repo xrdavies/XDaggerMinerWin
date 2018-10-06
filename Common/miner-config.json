@@ -1,9 +1,9 @@
 {
-    "version": "0.2.1003.0",
-    "instance_type": null,
+    "version": "0.2.1004.0",
+    "instance_type": 0,
     "is_fake_run": false,
     "xdagger": {
-        "pool_address": "xdag.coolmine.top:13654",
+        "pool_address": "",
         "wallet_address": ""
     },
     "eth": {

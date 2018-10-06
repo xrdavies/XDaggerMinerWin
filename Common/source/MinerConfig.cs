@@ -13,6 +13,7 @@ namespace XDaggerMiner.Common
     {
         public enum InstanceTypes
         {
+            Unset = 0,
             XDagger = 1,
             Eth = 2,
         }
