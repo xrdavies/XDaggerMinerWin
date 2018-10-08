@@ -40,6 +40,7 @@ namespace XDaggerMinerDaemonTest.ComponentTests
         }
 
         [TestMethod]
+        [Ignore]
         public void TestConfigureAnotherInstanceId()
         {
             string result = ExecuteDaemon("-c \"{ 'XDaggerWallet':'1Nwa0TCr5umw5ZLAvKmHCl+SJDP21dyL', 'XDaggerPoolAddress':'xey.ti:13654', 'DeviceId':'p_0_d_0','AutoDecideInstanceId':'true' }\"");
@@ -68,6 +69,7 @@ namespace XDaggerMinerDaemonTest.ComponentTests
         }
 
         [TestMethod]
+        [Ignore]
         public void TestConfigureUpdateInstanceType()
         {
             string result = ExecuteDaemon("-c \"{ 'XDaggerWallet':'1Nwa0TCr5umw5ZLAvKmHCl+SJDP21dyL', 'XDaggerPoolAddress':'xey.ti:13654', 'DeviceId':'p_0_d_0','AutoDecideInstanceId':'true' }\"");
