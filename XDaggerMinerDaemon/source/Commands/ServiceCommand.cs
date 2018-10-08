@@ -232,7 +232,16 @@ namespace XDaggerMinerDaemon.Commands
             if (serviceInstance.IsServiceExist())
             {
                 logger.Trace("IsServiceExist is true, try uninstalling the previous service.");
-                serviceProvider.UninstallService(instanceId);
+
+                try
+                {
+                    serviceProvider.UninstallService(instanceId);
+                }
+                catch(Exception ex)
+                {
+                    // Will continue when uninstalling is failed.
+                    logger.Error("Got error while uninstalling: " + ex.ToString());
+                }
             }
 
             // If the uninsallation is successful, update the config file

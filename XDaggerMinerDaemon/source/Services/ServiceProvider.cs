@@ -75,7 +75,7 @@ namespace XDaggerMinerDaemon.Services
         /// </summary>
         public ServiceInstance InstallService(int instanceId)
         {
-            if (instanceId == 0)
+            if (instanceId > 0)
             {
                 ManagedInstallerClass.InstallHelper(new string[] { "/instance=" + instanceId, ServiceBinaryFullPath });
             }
@@ -89,7 +89,7 @@ namespace XDaggerMinerDaemon.Services
 
         public void UninstallService(int instanceId)
         {
-            if (instanceId == 0)
+            if (instanceId > 0)
             {
                 ManagedInstallerClass.InstallHelper(new string[] { "/u", "/instance=" + instanceId, ServiceBinaryFullPath });
             }
