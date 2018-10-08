@@ -53,7 +53,7 @@ namespace XDaggerMinerDaemon
             if (commands.Count == 0)
             {
                 // Do nothing is there is no command
-                return CommandResult.ErrorResult(DaemonErrorCode.COMMAND_MISSING, "missing command here.");
+                return CommandResult.ErrorResult(DaemonErrorCode.COMMAND_MISSING, "Missing command here.");
             }
 
             if (commands.Count > 1)

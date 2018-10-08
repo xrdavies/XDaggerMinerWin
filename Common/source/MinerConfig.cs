@@ -106,7 +106,12 @@ namespace XDaggerMiner.Common
             var location = System.Reflection.Assembly.GetExecutingAssembly().Location;
             var directoryPath = Path.GetDirectoryName(location);
 
-            using (StreamReader sr = new StreamReader(Path.Combine(directoryPath, defaultConfigFileName)))
+            return ReadFromFile(Path.Combine(directoryPath, defaultConfigFileName));
+        }
+
+        public static MinerConfig ReadFromFile(string fileFullName)
+        {
+            using (StreamReader sr = new StreamReader(fileFullName))
             {
                 string jsonString = sr.ReadToEnd();
                 MinerConfig config = JsonConvert.DeserializeObject<MinerConfig>(jsonString);

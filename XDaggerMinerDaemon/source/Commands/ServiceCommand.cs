@@ -8,11 +8,11 @@ using Service = System.ServiceProcess;
 using System.Text;
 using System.Threading.Tasks;
 using XDaggerMinerDaemon.Utils;
-using XDaggerMinerDaemon.Commands.Outputs;
 using XDaggerMiner.Common;
 using XDaggerMiner.Common.Utils;
 using XDaggerMiner.Common.Contracts;
 using XDaggerMinerDaemon.Services;
+using XDaggerMiner.Common.Contracts.CommandOutputs;
 
 namespace XDaggerMinerDaemon.Commands
 {

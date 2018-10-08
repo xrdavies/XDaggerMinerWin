@@ -5,10 +5,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using XDaggerMinerRuntimeCLI;
-using XDaggerMinerDaemon.Commands.Outputs;
 using XDaggerMiner.Common;
 using XDaggerMiner.Common.Contracts;
 using XDaggerMiner.Common.Utils;
+using XDaggerMiner.Common.Contracts.CommandOutputs;
 
 namespace XDaggerMinerDaemon.Commands
 {

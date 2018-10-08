@@ -8,16 +8,21 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace XDaggerMinerDaemonTest.ComponentTests
 {
     [TestClass]
-    public class BVT
+    public class BVT : TestBase
     {
+        [ClassInitialize]
+        public void TestInit()
+        {
+            UninstallAllServices();
+        }
+
         [TestMethod]
         public void SimpleBVT()
         {
 
 
         }
-
-
+        
 
 
     }

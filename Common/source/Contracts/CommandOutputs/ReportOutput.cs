@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace XDaggerMinerDaemon.Commands.Outputs
+namespace XDaggerMiner.Common.Contracts.CommandOutputs
 {
     public class ReportOutput
     {

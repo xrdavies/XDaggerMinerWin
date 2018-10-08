@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using XDaggerMinerRuntimeCLI;
 
-namespace XDaggerMinerDaemon.Commands.Outputs
+namespace XDaggerMiner.Common.Contracts.CommandOutputs
 {
     public class MinerDeviceOutput
     {
@@ -20,7 +20,6 @@ namespace XDaggerMinerDaemon.Commands.Outputs
             this.DisplayName = device.GetDisplayName();
             this.DeviceVersion = device.GetDeviceVersion();
             this.DriverVersion = device.GetDriverVersion();
-
         }
 
         public string DeviceId

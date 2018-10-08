@@ -50,6 +50,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="source\Contracts\CommandOutputs\ConfigureOutput.cs" />
+    <Compile Include="source\Contracts\CommandOutputs\MessageOutput.cs" />
+    <Compile Include="source\Contracts\CommandOutputs\MinerDeviceOutput.cs" />
+    <Compile Include="source\Contracts\CommandOutputs\ReportOutput.cs" />
     <Compile Include="source\Contracts\DaemonErrorCode.cs" />
     <Compile Include="source\Contracts\MinerServiceState.cs" />
     <Compile Include="source\Contracts\TargetExecutionException.cs" />

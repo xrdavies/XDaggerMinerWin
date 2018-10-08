@@ -7,3 +7,15 @@ D:\GitRoot\xdagger\XDaggerMinerWin\XDaggerMinerDaemonTest\obj\Release\XDaggerMin
 D:\GitRoot\xdagger\XDaggerMinerWin\XDaggerMinerDaemonTest\obj\Release\XDaggerMinerDaemonTest.csproj.CopyComplete
 D:\GitRoot\xdagger\XDaggerMinerWin\XDaggerMinerDaemonTest\obj\Release\XDaggerMinerDaemonTest.dll
 D:\GitRoot\xdagger\XDaggerMinerWin\XDaggerMinerDaemonTest\obj\Release\XDaggerMinerDaemonTest.pdb
+C:\Toney\Git\xdagger\XDaggerMinerWin\XDaggerMinerDaemonTest\obj\Release\XDaggerMinerDaemonTest.csprojAssemblyReference.cache
+C:\Toney\Git\xdagger\XDaggerMinerWin\XDaggerMinerDaemonTest\obj\Release\XDaggerMinerDaemonTest.csproj.CoreCompileInputs.cache
+C:\Toney\Git\xdagger\XDaggerMinerWin\bin\Release\Test\log4net-common.config
+C:\Toney\Git\xdagger\XDaggerMinerWin\bin\Release\Test\miner-config.json
+C:\Toney\Git\xdagger\XDaggerMinerWin\bin\Release\Test\Microsoft.VisualStudio.TestPlatform.MSTest.TestAdapter.dll
+C:\Toney\Git\xdagger\XDaggerMinerWin\bin\Release\Test\Microsoft.VisualStudio.TestPlatform.MSTestAdapter.PlatformServices.Interface.dll
+C:\Toney\Git\xdagger\XDaggerMinerWin\bin\Release\Test\Microsoft.VisualStudio.TestPlatform.MSTestAdapter.PlatformServices.dll
+C:\Toney\Git\xdagger\XDaggerMinerWin\bin\Release\Test\XDaggerMinerDaemonTest.dll
+C:\Toney\Git\xdagger\XDaggerMinerWin\bin\Release\Test\XDaggerMinerDaemonTest.pdb
+C:\Toney\Git\xdagger\XDaggerMinerWin\XDaggerMinerDaemonTest\obj\Release\XDaggerMinerDaemonTest.csproj.CopyComplete
+C:\Toney\Git\xdagger\XDaggerMinerWin\XDaggerMinerDaemonTest\obj\Release\XDaggerMinerDaemonTest.dll
+C:\Toney\Git\xdagger\XDaggerMinerWin\XDaggerMinerDaemonTest\obj\Release\XDaggerMinerDaemonTest.pdb

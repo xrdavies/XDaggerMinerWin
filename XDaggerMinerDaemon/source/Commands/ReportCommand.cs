@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using XDaggerMiner.Common;
 using XDaggerMiner.Common.Contracts;
-using XDaggerMinerDaemon.Commands.Outputs;
+using XDaggerMiner.Common.Contracts.CommandOutputs;
 using XDaggerMinerDaemon.Services;
 using XDaggerMinerDaemon.Utils;
 

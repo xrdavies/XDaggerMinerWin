@@ -6,8 +6,8 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Timers;
+using XDaggerMiner.Common.Contracts.CommandOutputs;
 using XDaggerMiner.Common.Utils;
-using XDaggerMinerDaemon.Commands.Outputs;
 using XDaggerMinerRuntimeCLI;
 
 namespace XDaggerMinerDaemon.Commands

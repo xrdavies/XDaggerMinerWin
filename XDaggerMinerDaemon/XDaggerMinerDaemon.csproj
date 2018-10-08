@@ -51,6 +51,9 @@
   <PropertyGroup>
     <StartupObject>XDaggerMinerDaemon.Program</StartupObject>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="buildBom, Version=1.1.1.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Hub-NuGet.1.1.1\lib\net452\buildBom.exe</HintPath>
@@ -93,14 +96,10 @@
     <Compile Include="source\Commands\ConfigureCommand.cs" />
     <Compile Include="source\Commands\ConsoleCommand.cs" />
     <Compile Include="source\Commands\ListDevicesCommand.cs" />
-    <Compile Include="source\Commands\Outputs\ConfigureOutput.cs" />
-    <Compile Include="source\Commands\Outputs\MessageOutput.cs" />
-    <Compile Include="source\Commands\Outputs\ReportOutput.cs" />
     <Compile Include="source\Commands\ReportCommand.cs" />
     <Compile Include="source\Commands\ServiceCommand.cs" />
     <Compile Include="source\Commands\TestingCommands.cs" />
     <Compile Include="source\MainConsole.cs" />
-    <Compile Include="source\Commands\Outputs\MinerDeviceOutput.cs" />
     <Compile Include="source\Services\EthServiceProvider.cs" />
     <Compile Include="source\Services\ServiceInstance.cs" />
     <Compile Include="source\Services\ServiceProvider.cs" />
@@ -109,6 +108,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="app.manifest" />
     <None Include="log4net-daemon.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
